@@ -1,5 +1,7 @@
 ## Tiny Models in Browser
 
+<img src="./public/mockup.png" style="height: 500px;">
+
 This project explores training and evaluating tiny open-source models directly in the browser for payments-related NLP tasks (intent detection, type classification, amount & currency extraction).
 
 ## Getting Started
