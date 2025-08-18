@@ -3,10 +3,11 @@ import { createRoot } from 'react-dom/client'
 // import { HomePage } from './pages/Home'
 
 import './index.css'
-import { TestPage } from './pages/Test'
+import { HomePage } from './pages/Home'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <TestPage/>
+    {/* <TestPage/> */}
+    <HomePage/>
   </StrictMode>,
 )
