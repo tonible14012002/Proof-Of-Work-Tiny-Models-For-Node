@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { ModelDetail } from "@/schema/model";
+import { useState } from "react";
 
 interface ModelInferenceTabProps {
   model: ModelDetail;
@@ -9,24 +10,42 @@ interface ModelInferenceTabProps {
 
 export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
   const { model } = props;
+  const [inputValue, setInputValue] = useState("");
+  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+  };
+
   console.log({model})
 
   return (
     <>
-      <div className="p-4 rounded-xl border">
+      <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
         <h2 className="text-lg font-semibold">Inference</h2>
         <div className="space-y-4">
           <div className="space-y-1">
-            <label className="block text-xs text-muted-foreground font-medium" htmlFor="user-input">
+            <label
+              className="block text-xs text-muted-foreground font-medium"
+              htmlFor="user-input"
+            >
               User input
             </label>
-            <Textarea id="user-input" cols={5} className="min-h-[100px]" />
+            <Textarea
+              id="user-input"
+              cols={5}
+              className="min-h-[100px]"
+              value={inputValue}
+              onChange={onChange}
+            />
           </div>
-          <Button className="w-full" variant="default">
+          <Button className="w-full" variant="default" type="submit">
             Submit
           </Button>
         </div>
-      </div>
+      </form>
       <div className="rounded-lg space-y-2 p-4 mt-4 border">
         <h3 className="font-medium text-lg">Inference Result</h3>
         <div className="flex flex-wrap gap-2">

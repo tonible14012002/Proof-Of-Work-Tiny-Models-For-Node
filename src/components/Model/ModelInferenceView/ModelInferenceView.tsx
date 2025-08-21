@@ -4,6 +4,8 @@ import type { ModelDetail } from "@/schema/model";
 import { DownloadIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { ModelInferenceTab } from "./ModelInferenceTab";
+import { useWorkerContext } from "@/provider/ModelWorkerProvider";
+import { toast } from "sonner";
 
 interface ModelInferenceViewProps {
   selectedModel?: ModelDetail;
@@ -12,13 +14,24 @@ interface ModelInferenceViewProps {
 const MODES = {
   FINETUNING: "fine-tuning",
   INFERENCE: "inference",
-}
-type ModeType = typeof MODES[keyof typeof MODES];
+};
+type ModeType = (typeof MODES)[keyof typeof MODES];
 
 export const ModelInferenceView = ({
   selectedModel,
 }: ModelInferenceViewProps) => {
-  const [mode, setMode] = useState<ModeType>(MODES.FINETUNING);
+  const [mode, setMode] = useState<ModeType>(MODES.INFERENCE);
+  const { loadModel } = useWorkerContext();
+
+  const onLoadModelBtn = () => {
+    if (!selectedModel) return;
+    loadModel(selectedModel);
+  };
+
+  const handleExport = () => {
+    console.log("Exporting model...");
+    toast.warning("Model Exporting is not supported yet");
+  };
 
   if (!selectedModel) return null;
   return (
@@ -34,11 +47,11 @@ export const ModelInferenceView = ({
             <TabsTrigger value={MODES.FINETUNING}>Fine Tuning Mode</TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2">
-            <Button>
+            <Button onClick={onLoadModelBtn} size="sm" variant="outline">
               Load Model
             </Button>
-            <Button size="sm" variant="outline">
-              <DownloadIcon/>
+            <Button size="sm" variant="outline" onClick={handleExport}>
+              <DownloadIcon />
               Export
             </Button>
             <Button size="sm" className="w-8 h-8" variant="destructive">
@@ -53,7 +66,7 @@ export const ModelInferenceView = ({
               infos={{
                 "Model Name": selectedModel.name,
                 Task: selectedModel.task,
-                "Status": "Not loaded"
+                Status: "Not loaded",
               }}
             />
             <ConfigInfo
@@ -67,13 +80,13 @@ export const ModelInferenceView = ({
               title="Benchmark"
               infos={{
                 "Average Latency": selectedModel.latency + " ms",
-                "Accuracy": 0,
+                Accuracy: 0,
                 "F1 Score": 0,
               }}
             />
           </div>
           <TabsContent value={MODES.INFERENCE}>
-            <ModelInferenceTab model={selectedModel}/>
+            <ModelInferenceTab model={selectedModel} />
           </TabsContent>
         </div>
       </Tabs>

@@ -6,10 +6,11 @@ import { Layout } from "@/components/ui/layout";
 import type { ModelDetail } from "@/schema/model";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { DEFAULT_MODELS } from "./constant";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useModels } from "@/provider/ModelsProvider";
 
 export const HomePage = () => {
+  const { models} = useModels()
   const [selectedModel, setSelectedModel] = useState<ModelDetail>();
 
   return (
@@ -29,7 +30,7 @@ export const HomePage = () => {
               title="Transformer.Js"
               listEl={
                 <ModelList
-                  modelDetails={DEFAULT_MODELS}
+                  modelDetails={models}
                   onSelectModel={setSelectedModel}
                 />
               }

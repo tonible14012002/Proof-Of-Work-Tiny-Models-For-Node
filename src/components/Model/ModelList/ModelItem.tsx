@@ -18,7 +18,7 @@ export const ModelItem: React.FC<ModelItemProps> = ({
       className="w-full rounded-md p-2 hover:bg-accent transition-colors cursor-pointer border"
       onClick={() => onSelect(modelDetail)}
     >
-      <div className="flex gap-2">
+      <div className="flex gap-4">
         <div className="flex flex-col flex-1">
           <p className="text-sm font-medium line-clamp-2">{modelDetail.name}</p>
           <span className="text-xs text-muted-foreground mt-px">
