@@ -1,8 +1,8 @@
 import React from "react";
 import { type ModelDetail } from "@/schema/model";
 import { TimerIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { formatReadableFileSize } from "@/utils/format";
+// import { Badge } from "@/components/ui/badge";
+// import { formatReadableFileSize } from "@/utils/format";
 
 type ModelItemProps = {
   modelDetail: ModelDetail;
@@ -32,11 +32,11 @@ export const ModelItem: React.FC<ModelItemProps> = ({
           </div>
         </div>
         <div className="">
-          {modelDetail.size !== undefined && (
+          {/* {modelDetail.size !== undefined && (
             <Badge variant="outline">
               {formatReadableFileSize(modelDetail.size)}
             </Badge>
-          )}
+          )} */}
         </div>
       </div>
     </div>

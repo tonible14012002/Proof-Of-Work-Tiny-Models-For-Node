@@ -3,7 +3,7 @@ export const MODEL_WORKER_EVENT = {
   MAIN: {
     terminate: "TERMINATE",
     init_model: "INIT_MODEL",
-    run: "RUN",
+    inference: "INFERENCE",
   },
   WORKER: {
     // Receive Event
@@ -11,8 +11,8 @@ export const MODEL_WORKER_EVENT = {
     terminated: "TERMINATED",
     initing: "INITING",
     downloading: "DOWNLOADING",
-    caching: "CACHING",
-    loading: "LOADING",
+    downloaded: "DOWNLOADED",
+    loaded: "LOADED",
     ready: "READY",
     inference_complete: "INFERENCE_COMPLETE",
   },
@@ -27,49 +27,44 @@ export const MODEL_STATE = {
   IDLE: "IDLE",
   WAITING: "WAITING",
   DOWNLOADING: "DOWNLOADING",
-  CACHING: "CACHING",
   LOADING: "LOADING",
   READY: "READY",
   INFERENCING: "INFERENCING",
 } as const;
 
-export type ModelState = (typeof MODEL_STATE)[keyof typeof MODEL_STATE];
+// export type ModelState = (typeof MODEL_STATE)[keyof typeof MODEL_STATE];
 
-export const getNextState = (
-  prevState: ModelState,
-  event: ModelWorkerEvent | ModelMainEvent
-) => {
-  switch (prevState) {
-    case MODEL_STATE.IDLE:
-        if (event === MODEL_WORKER_EVENT.WORKER.initing) {
-            return MODEL_STATE.WAITING;
-        }
-        break
-    case MODEL_STATE.WAITING:
-    case MODEL_STATE.DOWNLOADING:
-    case MODEL_STATE.LOADING:
-    case MODEL_STATE.CACHING:
-        if (event === MODEL_WORKER_EVENT.WORKER.downloading) {
-            return MODEL_STATE.DOWNLOADING;
-        }
-        if (event === MODEL_WORKER_EVENT.WORKER.caching) {
-            return MODEL_STATE.CACHING;
-        }
-        if (event === MODEL_WORKER_EVENT.WORKER.loading) {
-            return MODEL_STATE.LOADING;
-        }
-        if (event === MODEL_WORKER_EVENT.WORKER.ready) {
-            return MODEL_STATE.READY;
-        }
-        break
-    case MODEL_STATE.READY:
-        if (event === MODEL_WORKER_EVENT.MAIN.run) {
-            return MODEL_STATE.INFERENCING;
-        }
-        if (event === MODEL_WORKER_EVENT.WORKER.inference_complete) {
-            return MODEL_STATE.READY;
-        }
-  }
+// export const getNextState = (
+//   prevState: ModelState,
+//   event: ModelWorkerEvent | ModelMainEvent
+// ) => {
+//   switch (prevState) {
+//     case MODEL_STATE.IDLE:
+//         if (event === MODEL_WORKER_EVENT.WORKER.initing) {
+//             return MODEL_STATE.WAITING;
+//         }
+//         break
+//     case MODEL_STATE.WAITING:
+//     case MODEL_STATE.DOWNLOADING:
+//     case MODEL_STATE.LOADING:
+//         if (event === MODEL_WORKER_EVENT.WORKER.downloading) {
+//             return MODEL_STATE.DOWNLOADING;
+//         }
+//         if (event === MODEL_WORKER_EVENT.WORKER.downloaded) {
+//             return MODEL_STATE.LOADING;
+//         }
+//         if (event === MODEL_WORKER_EVENT.WORKER.ready) {
+//             return MODEL_STATE.READY;
+//         }
+//         break
+//     case MODEL_STATE.READY:
+//         if (event === MODEL_WORKER_EVENT.MAIN.inference) {
+//             return MODEL_STATE.INFERENCING;
+//         }
+//         if (event === MODEL_WORKER_EVENT.WORKER.inference_complete) {
+//             return MODEL_STATE.READY;
+//         }
+//   }
 
-  return prevState
-};
+//   return prevState
+// };

@@ -1,12 +1,19 @@
-import { MODEL_WORKER_EVENT, type ModelWorkerEvent } from "@/constants/event";
-import type { PropsWithChildren } from "react";
+import { MODEL_WORKER_EVENT } from "@/constants/event";
+import type { PropsWithChildren, RefObject } from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { createContext } from "@/lib/utils";
 import { makeMessage } from "@/utils/worker";
-import type { ModelDetail } from "@/schema/model";
+import type { ModelDetail, ModelInferenceInput } from "@/schema/model";
 
 interface ModelWorkerContextValues {
   loadModel: (model: ModelDetail) => Promise<void>;
+  worker: RefObject<Worker | null>;
+  runModel: (
+    modelId: string,
+    task: ModelDetail["task"],
+    input: string | string[],
+    params: any
+  ) => Promise<void>;
 }
 
 // Custom utils force context MUST be available
@@ -17,25 +24,42 @@ export { useWorkerContext };
 export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
   const workerRef = useRef<Worker | null>(null);
 
-  const handleWorkerEvents = useCallback((event: MessageEvent) => {
+  const handleWorkerEvents = useCallback((_event: MessageEvent) => {
     if (!workerRef.current) return;
-    const message = event.data as {
-      type: ModelWorkerEvent;
-      data: any;
-    };
-    console.log("Worker message received:", message);
+    //
   }, []);
 
   const onLoadModel = async (model: ModelDetail) => {
     if (!workerRef.current) return;
     workerRef.current.postMessage(
       makeMessage({
+        modelId: model.id,
         type: MODEL_WORKER_EVENT.MAIN.init_model,
         data: {
           task: model.task,
-          modelPath: model.model,
+          modelPath: model.modelPath,
           config: model.config || {},
         },
+      })
+    );
+  };
+
+  const runModel = async (
+    modelId: string,
+    task: ModelDetail["task"],
+    input: string | string[],
+    params: any
+  ) => {
+    if (!workerRef.current) return;
+    workerRef.current.postMessage(
+      makeMessage({
+        modelId: modelId,
+        type: MODEL_WORKER_EVENT.MAIN.inference,
+        data: {
+          input,
+          task,
+          params,
+        } as ModelInferenceInput,
       })
     );
   };
@@ -60,6 +84,8 @@ export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
     <Provider
       value={{
         loadModel: onLoadModel,
+        worker: workerRef,
+        runModel,
       }}
     >
       {children}

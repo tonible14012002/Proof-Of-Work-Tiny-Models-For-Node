@@ -1,94 +1,143 @@
 import {
+  AutoModelForSequenceClassification,
+  AutoTokenizer,
   pipeline,
-  type PipelineType,
+  PreTrainedModel,
+  PreTrainedTokenizer,
+  TextClassificationPipeline,
+  ZeroShotClassificationPipeline,
   type ProgressInfo,
 } from "@huggingface/transformers";
-import { MODEL_WORKER_EVENT, type ModelMainEvent } from "@/constants/event";
-import { makeMessage } from "@/utils/worker";
-import type { InitModelInput } from "@/schema/model";
+import { MODEL_WORKER_EVENT } from "@/constants/event";
+import { endTimer, makeMessage, startTimer } from "@/utils/worker";
+import type {
+  FileLoadInfo,
+  InitModelInput,
+  ModelDetail,
+  ModelInferenceInput,
+  WorkerMessage,
+} from "@/schema/model";
+import type {
+  InitiateProgressInfo,
+  DownloadProgressInfo,
+  ProgressStatusInfo,
+  DoneProgressInfo,
+} from "node_modules/@huggingface/transformers/types/utils/core";
 
 type OnLoadModel = (event: ProgressInfo) => void;
+
+type ProgressInput =
+  | InitiateProgressInfo
+  | DownloadProgressInfo
+  | ProgressStatusInfo
+  | DoneProgressInfo;
 
 class ModelFactory {
   static modelMap = new Map<string, any>();
 
-  static initModel(task: PipelineType, modelPath: string, onLoad: OnLoadModel) {
-    if (this.modelMap.has(modelPath)) {
-      return this.modelMap.get(modelPath);
+  static async initModel(
+    modelId: string,
+    task: ModelDetail["task"],
+    modelPath: string,
+    onLoad: OnLoadModel
+  ) {
+    if (this.modelMap.has(modelId)) {
+      return this.modelMap.get(modelId);
     }
-    const model = pipeline(task, modelPath, {
-      progress_callback: onLoad,
-    });
+    if (task === "tokenizer") {
+      const fetchModel = AutoModelForSequenceClassification.from_pretrained(
+        modelPath,
+        {
+          progress_callback: onLoad,
+        }
+      );
 
-    this.modelMap.set(modelPath, model);
+      const fetchTokenizer = AutoTokenizer.from_pretrained(modelPath, {
+        progress_callback: onLoad,
+      });
 
-    return model;
+      const [model, tokenizer] = await Promise.all([
+        fetchModel,
+        fetchTokenizer,
+      ]);
+
+      this.modelMap.set(modelId, {
+        model,
+        tokenizer,
+      });
+    } else {
+      const model = await pipeline(task, modelPath, {
+        progress_callback: onLoad,
+      });
+
+      this.modelMap.set(modelId, model);
+      return model;
+    }
+  }
+
+  static async runInferenceModel(
+    modelId: string,
+    task: ModelDetail["task"],
+    input: string | string[],
+    params: any
+  ) {
+    const model = this.modelMap.get(modelId);
+    if (!model) {
+      throw new Error(`Model ${modelId} not found`);
+    }
+
+    const latency = performance.now();
+
+    switch (task) {
+      case "tokenizer": {
+        const tokenizer = model.tokenizer as PreTrainedTokenizer;
+        const runModel = model.model as PreTrainedModel;
+
+        const features = await tokenizer(["How much money has been sent?"], {
+          text_pair: [input],
+          padding: true,
+          truncation: true,
+        });
+
+        const result = await runModel(features) ;
+        return {
+          data: result.logits.data,
+          latency: performance.now() - latency,
+        };
+      }
+      case "zero-shot-classification": {
+        const typedModel = model as ZeroShotClassificationPipeline;
+        console.log(params)
+        const result = await typedModel(input, params?.labels, params?.options);
+        return {
+          data: result,
+          latency: performance.now() - latency,
+        };
+      }
+      case "text-classification": {
+        const typedModel = model as TextClassificationPipeline;
+        const result = await typedModel(input, params?.options);
+        return {
+          data: result,
+          latency: performance.now() - latency,
+        };
+      }
+    }
   }
 }
 
 self.addEventListener("message", async (event) => {
-  // Handle incoming messages
-  const message = event.data as {
-    type: ModelMainEvent;
-    data: any;
-  };
+  const message = event.data as WorkerMessage;
   switch (message.type) {
     case MODEL_WORKER_EVENT.MAIN.init_model: {
-      const data = message.data as InitModelInput;
-      const timeTrack = {
-        downloadTime: 0,
-        initDownloadTime: 0,
-        loadTime: 0,
-        initLoadTime: 0,
-      };
-      ModelFactory.initModel(data.task, data.modelPath, (progress) => {
-        // Time Track
-        if (progress.status === "download") {
-          if (!timeTrack.initDownloadTime) {
-            // Start track download
-            timeTrack.initDownloadTime = performance.now();
-          }
-          timeTrack.downloadTime =
-            performance.now() - timeTrack.initDownloadTime;
-        }
-        if (progress.status === "done") {
-          //  Finish download Time
-          timeTrack.downloadTime =
-            performance.now() - timeTrack.initDownloadTime;
-          if (!timeTrack.initLoadTime) {
-            // Start track load
-            timeTrack.initLoadTime = performance.now();
-          }
-          timeTrack.loadTime = performance.now() - timeTrack.initLoadTime;
-        }
-
-        if (progress.status === "done") {
-          // Finished loading
-          timeTrack.loadTime = performance.now() - timeTrack.initLoadTime;
-        }
-
-        if (progress.status === "progress") {
-          self.postMessage(
-            makeMessage({
-              type: MODEL_WORKER_EVENT.WORKER.downloading,
-              data: {
-                downloadTime: timeTrack.downloadTime,
-              },
-            })
-          );
-        }
-
-        if (progress.status === "ready") {
-          self.postMessage(
-            makeMessage({
-              type: MODEL_WORKER_EVENT.WORKER.ready,
-              data: {
-                loadTime: timeTrack.loadTime,
-              },
-            })
-          );
-        }
-      });
+      eventHandlers.initModel(message.modelId, message.data as InitModelInput);
+      break;
+    }
+    case MODEL_WORKER_EVENT.MAIN.inference: {
+      eventHandlers.runInference(
+        message.modelId,
+        message.data as ModelInferenceInput
+      );
     }
   }
 });
@@ -96,6 +145,117 @@ self.addEventListener("message", async (event) => {
 // Worker Initialize Done
 self.postMessage(
   makeMessage({
+    modelId: "",
     type: MODEL_WORKER_EVENT.WORKER.worker_ready,
   })
 );
+
+const eventHandlers = {
+  initModel: async (modelId: string, data: InitModelInput) => {
+    const timeTrack = {} as any;
+    const loadStatus: Record<string, FileLoadInfo> = {};
+
+    await ModelFactory.initModel(
+      modelId,
+      data.task,
+      data.modelPath,
+      (baseProgress) => {
+        
+        console.log(baseProgress);
+
+        if (baseProgress.status !== "ready") {
+          const progressInfo = baseProgress as ProgressInput;
+
+          loadStatus[progressInfo.file] = {
+            ...(loadStatus[progressInfo.file] || {}),
+            ...progressInfo,
+          };
+
+          // Fill missing info if not have
+          loadStatus[progressInfo.file] = {
+            ...loadStatus[progressInfo.file],
+            loaded: loadStatus[progressInfo.file].loaded || 0,
+            total: loadStatus[progressInfo.file].total || 0,
+            progress: loadStatus[progressInfo.file].progress || 0,
+            duration: loadStatus[progressInfo.file].duration || 0,
+          };
+
+          if (progressInfo.status === "initiate") {
+            startTimer(timeTrack, progressInfo.file);
+          } else {
+            endTimer(timeTrack, progressInfo.file);
+          }
+
+          const isAllDownloadDone = Object.values(loadStatus).every(
+            (info) => info.status === "done"
+          );
+
+          if (isAllDownloadDone) {
+            self.postMessage(
+              makeMessage({
+                type: MODEL_WORKER_EVENT.WORKER.downloaded,
+                modelId: modelId,
+                data: {
+                  timeTrack,
+                  loadStatus,
+                },
+              })
+            );
+            startTimer(timeTrack, "modelLoadTime");
+          } else {
+            self.postMessage(
+              makeMessage({
+                type: MODEL_WORKER_EVENT.WORKER.downloading,
+                modelId: modelId,
+                data: {
+                  timeTrack,
+                  loadStatus,
+                },
+              })
+            );
+          }
+        } else {
+          self.postMessage(
+            makeMessage({
+              type: MODEL_WORKER_EVENT.WORKER.loaded,
+              modelId: modelId,
+              data: {
+                timeTrack,
+                loadStatus,
+              },
+            })
+          );
+        }
+      }
+    );
+    if (timeTrack["modelLoadTime"]) {
+      endTimer(timeTrack, "modelLoadTime");
+    }
+    self.postMessage(
+      makeMessage({
+        type: MODEL_WORKER_EVENT.WORKER.ready,
+        modelId: modelId,
+        data: {
+          timeTrack,
+          loadStatus,
+        },
+      })
+    );
+  },
+
+  runInference: async (modelId: string, data: ModelInferenceInput) => {
+    const result = await ModelFactory.runInferenceModel(
+      modelId,
+      data.task,
+      data.input,
+      data.params
+    );
+    self.postMessage(
+      makeMessage({
+        data: result,
+        modelId: modelId,
+        type: MODEL_WORKER_EVENT.WORKER.inference_complete,
+      })
+    );
+  },
+};

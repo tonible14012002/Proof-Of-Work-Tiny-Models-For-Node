@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useModels } from "@/provider/ModelsProvider";
 
 export const HomePage = () => {
-  const { models} = useModels()
+  const { models } = useModels();
   const [selectedModel, setSelectedModel] = useState<ModelDetail>();
 
   return (
@@ -38,7 +38,13 @@ export const HomePage = () => {
           </ScrollArea>
         </div>
         <div className="h-full min-h-0">
-          <ModelInferenceView selectedModel={selectedModel} />
+          {selectedModel && (
+            // Force reload component on change
+            <ModelInferenceView
+              selectedModel={selectedModel}
+              key={selectedModel.id}
+            />
+          )}
         </div>
       </div>
     </Layout>
