@@ -202,6 +202,11 @@ export const ModelInferenceView = ({
                 },
                 {
                   type: "text",
+                  label: "Load time",
+                  value: formatReadableDurationInMs(model.loadTime)
+                },
+                {
+                  type: "text",
                   label: "Total File Size",
                   value:
                     formatReadableFileSize(infos.loadedSize) +

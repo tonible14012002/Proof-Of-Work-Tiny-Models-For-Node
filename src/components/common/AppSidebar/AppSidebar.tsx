@@ -9,12 +9,13 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { ModelAddPopup } from "@/components/Model/ModelAddPopup";
 
 interface AppSidebarProps {
   models: ModelDetail[];
   onSelectModel: (_: ModelDetail) => void;
   className?: string;
-  open?: boolean
+  open?: boolean;
   onOpenChange?: (_: boolean) => void;
 }
 
@@ -22,18 +23,17 @@ export const AppSidebar = (props: AppSidebarProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
-
   const onSelectModel = (model: ModelDetail) => {
     props.onSelectModel(model);
     props.onOpenChange?.(false);
     setIsOpen(false);
-  }
+  };
   const open = props.open === undefined ? isOpen : props.open;
   const onOpenChange = (open: boolean) => {
     props.onOpenChange?.(open);
     setIsOpen(open);
-  }
-  
+  };
+
   const onToggleSidebar = () => {
     onOpenChange(!open);
   };
@@ -84,10 +84,14 @@ export const AppSidebarContent = ({
       <h3 className="font-bold text-xl tracking-tight">Proof of Concept</h3>
       <p className="text-xs text-muted-foreground">Training Tiny Models</p>
       <div className="mt-8">
-        <Button size="sm">
-          <Plus />
-          Add Custom Model
-        </Button>
+        <ModelAddPopup
+          trigger={
+            <Button size="sm">
+              <Plus />
+              Add Custom Model
+            </Button>
+          }
+        />
       </div>
       <ScrollArea className="flex-1 mt-8 -mx-4 px-4 min-h-0">
         <ModelGroup
