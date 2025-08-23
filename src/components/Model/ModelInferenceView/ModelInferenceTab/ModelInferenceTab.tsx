@@ -29,7 +29,9 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
     const payload = event.data as WorkerMessage;
     if (payload.type === MODEL_WORKER_EVENT.WORKER.inference_complete) {
       const { latency, data } = payload.data as InferenceResult;
-      setResult({ latency, data });
+      const displayData =
+        typeof data === "object" ? JSON.stringify(data) : data;
+      setResult({ latency, data: displayData });
     }
   }, []);
 
@@ -52,15 +54,12 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
     e.preventDefault();
     const val = inputValue.trim();
     if (!val) return;
-    const labels = [
-      'payment',
-      "not payment"
-    ]
+    const labels = ["payment", "not payment"];
     runModel(model.id, model.task, val, {
       labels,
       options: {
         hypothesis_template: "This text is {label} related.",
-      }
+      },
     });
   };
 
@@ -92,15 +91,20 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
       <div className="rounded-lg space-y-2 p-4 mt-4 border">
         <h3 className="font-medium text-lg">Inference Result</h3>
         <div className="flex flex-wrap gap-2">
-          {/* <Badge variant="default">Confidence: 0.89</Badge> */}
           {result?.latency && (
             <Badge variant="default">
               Latency: {Math.round(result.latency * 100) / 100}ms
             </Badge>
           )}
         </div>
-        <div className="mt-4 bg-muted p-4 rounded-lg">
-          {result ? <>{result.data}</> : <span className="text-sm text-muted-foreground">Submit first</span>}
+        <div className="mt-4 bg-muted p-4 rounded-lg break-words">
+          {result ? (
+            <>{result.data}</>
+          ) : (
+            <span className="text-sm text-muted-foreground">
+              Empty.
+            </span>
+          )}
         </div>
       </div>
     </>

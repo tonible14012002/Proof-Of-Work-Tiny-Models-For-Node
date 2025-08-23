@@ -1,5 +1,4 @@
 import type { ModelDetail } from "@/schema/model";
-import { dynamic_time_warping } from "@huggingface/transformers";
 
 export const DEFAULT_MODELS: ModelDetail[] = [
   {
@@ -10,7 +9,6 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     task: "tokenizer",
     config: {
       dtype: "int8",
-      device: "webgpu",
     },
     loadFiles: {},
     loaded: false,
@@ -22,23 +20,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     task: "tokenizer",
     config: {
       dtype: "fp16",
-      device: "webgpu",
     },
     loadFiles: {},
     loaded: false,
   },
-  // Not Supported
-  // {
-  //   id: "cross-encoder/ms-marco-MiniLM-L12-v2",
-  //   name: "cross-encoder/ms-marco-MiniLM-L12-v2",
-  //   task: "tokenizer",
-  //   config: {
-  //     dtype: "int8",
-  //     device: "webgpu",
-  //   },
-  //   loadFiles: {},
-  //   loaded: false,
-  // }
   {
     id: "BAAI/bge-small-en INT8",
     name: "BAAI/bge-small-en",
@@ -46,7 +31,6 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     task: "tokenizer",
     config: {
       dtype: "int8",
-      device: "webgpu",
     },
     loadFiles: {},
     loaded: false,
@@ -56,9 +40,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     name: "TaylorAI/gte-tiny",
     modelPath: "TaylorAI/gte-tiny",
     task: "tokenizer",
-    config: {
-      device: "webgpu",
-    },
+    config: {},
     loadFiles: {},
     loaded: false,
   },
@@ -68,14 +50,20 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/bge-small-en-v1.5",
     task: "zero-shot-classification",
     config: {
-      device: "webgpu",
+      device: "auto",
     },
     loadFiles: {},
     loaded: false,
   },
-  // huawei-noah/TinyBERT_General_4L_312D
-  // sentence-transformers/all-MiniLM-L6-v2
-  // sentence-transformers/paraphrase-MiniLM-L3-v2s
-  // E5-small-v2
-  // Qwen 2.5-0.5B-Instruct Q4_K_S
+    {
+    id: "Xenova/distilbert-base-uncased-mnli",
+    name: "Xenova/distilbert-base-uncased-mnli",
+    modelPath: "Xenova/distilbert-base-uncased-mnli",
+    task: "zero-shot-classification",
+    config: {
+      device: "auto",
+    },
+    loadFiles: {},
+    loaded: false,
+  },
 ];

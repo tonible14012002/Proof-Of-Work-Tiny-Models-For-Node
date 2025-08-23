@@ -16,7 +16,6 @@ export const ModelsProvider = ({ children }: PropsWithChildren) => {
   const [models, setModels] = useState<ModelDetail[]>(DEFAULT_MODELS);
 
   const mutateList = (id: string, data: ModelDetail) => {
-    console.log({ id, data });
     setModels((prevModels) =>
       prevModels.map((model) => (model.id === id ? data : model))
     );

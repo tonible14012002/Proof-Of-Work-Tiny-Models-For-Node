@@ -15,6 +15,7 @@ export const MODEL_WORKER_EVENT = {
     loaded: "LOADED",
     ready: "READY",
     inference_complete: "INFERENCE_COMPLETE",
+    error: "ERROR",
   },
 } as const;
 
