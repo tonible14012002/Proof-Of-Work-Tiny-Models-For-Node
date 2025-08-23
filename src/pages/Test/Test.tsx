@@ -10,10 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  FeatureExtractionPipeline,
   pipeline,
-  TextClassificationPipeline,
+  Tensor,
   type ProgressInfo,
-  type TextClassificationOutput,
 } from "@huggingface/transformers";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -38,7 +38,7 @@ const schema = z.object({
 
 export const TestPage = () => {
   const [classifier, setClassifier] = useState<{
-    run: TextClassificationPipeline
+    run: FeatureExtractionPipeline
   }>();
   const [loadingInfo, setLoadingInfo] = useState<ModelInfo>({
     file: "",
@@ -51,7 +51,7 @@ export const TestPage = () => {
     model: "",
   });
 
-  const [result, setResult] = useState<TextClassificationOutput>();
+  const [result, setResult] = useState<Tensor>();
 
   const formInstance = useForm({
     defaultValues: {
@@ -68,7 +68,7 @@ export const TestPage = () => {
   };
 
   const loadClassifier = useCallback(async () => {
-    const clf = await pipeline("sentiment-analysis", undefined, {
+    const clf = await pipeline('feature-extraction', 'Xenova/sentence-t5-large', {
       progress_callback: onProgress,
     });
 
@@ -81,7 +81,7 @@ export const TestPage = () => {
     console.log(classifier)
     try {
       const result = await classifier.run(input);
-      setResult(result as TextClassificationOutput);
+      setResult(result);
     }
     catch(e) {
         console.log(e)

@@ -1,69 +1,49 @@
-# React + TypeScript + Vite
+## Tiny Models in Browser
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<img src="./public/mockup_v2.png" style="height: 500px;">
 
-Currently, two official plugins are available:
+This project explores training and evaluating tiny open-source models directly in the browser for payments-related NLP tasks (intent detection, type classification, amount & currency extraction).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
+Clone the repository:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+git clone git@github.com:tonible14012002/Proof-Of-Work-Tiny-Models-For-Node.git
+cd Proof-Of-Work-Tiny-Models-For-Node
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Install dependencies (using Bun or npm):
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```
+bun install
+```
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+
+Run the development server:
+
+```
+bun run dev
+```
+
+
+Open in your browser at http://localhost:5173
+
+## Technical Document
+
+**Project structure**
+
+```
+├── public/              # Static assets
+├── src/
+│   ├── assets/          # Images, icons, styles
+│   ├── components/      # Reusable UI components
+│   ├── lib/             # Utility functions, model logic
+│   ├── pages/           # Page-level components
+│   ├── index.css        # Global styles
+│   ├── main.tsx         # App entry point
+│   └── vite-env.d.ts    # Vite environment types
+├── index.html           # Root HTML file
+├── package.json         # Dependencies & scripts
+├── Makefile             # Automation scripts
+└── README.md            # Project documentation
 ```
