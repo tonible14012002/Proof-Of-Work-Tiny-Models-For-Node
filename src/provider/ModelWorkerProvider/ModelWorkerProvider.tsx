@@ -1,0 +1,94 @@
+import { MODEL_WORKER_EVENT } from "@/constants/event";
+import type { PropsWithChildren, RefObject } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { createContext } from "@/lib/utils";
+import { makeMessage } from "@/utils/worker";
+import type { ModelDetail, ModelInferenceInput } from "@/schema/model";
+
+interface ModelWorkerContextValues {
+  loadModel: (model: ModelDetail) => Promise<void>;
+  worker: RefObject<Worker | null>;
+  runModel: (
+    modelId: string,
+    task: ModelDetail["task"],
+    input: string | string[],
+    params: any
+  ) => Promise<void>;
+}
+
+// Custom utils force context MUST be available
+const [Provider, useWorkerContext] = createContext<ModelWorkerContextValues>();
+
+export { useWorkerContext };
+
+export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
+  const workerRef = useRef<Worker | null>(null);
+
+  const handleWorkerEvents = useCallback((_event: MessageEvent) => {
+    if (!workerRef.current) return;
+    //
+  }, []);
+
+  const onLoadModel = async (model: ModelDetail) => {
+    if (!workerRef.current) return;
+    workerRef.current.postMessage(
+      makeMessage({
+        modelId: model.id,
+        type: MODEL_WORKER_EVENT.MAIN.init_model,
+        data: {
+          task: model.task,
+          modelPath: model.modelPath,
+          config: model.config || {},
+        },
+      })
+    );
+  };
+
+  const runModel = async (
+    modelId: string,
+    task: ModelDetail["task"],
+    input: string | string[],
+    params: any
+  ) => {
+    if (!workerRef.current) return;
+    workerRef.current.postMessage(
+      makeMessage({
+        modelId: modelId,
+        type: MODEL_WORKER_EVENT.MAIN.inference,
+        data: {
+          input,
+          task,
+          params,
+        } as ModelInferenceInput,
+      })
+    );
+  };
+
+  useEffect(() => {
+    workerRef.current ??= new Worker(
+      new URL("./worker/loadModelWorker.ts", import.meta.url),
+      {
+        type: "module",
+      }
+    );
+
+    const workerRefCleaner = workerRef.current;
+    workerRefCleaner.addEventListener("message", handleWorkerEvents);
+
+    return () => {
+      workerRefCleaner.removeEventListener("message", handleWorkerEvents);
+    };
+  }, [handleWorkerEvents]);
+
+  return (
+    <Provider
+      value={{
+        loadModel: onLoadModel,
+        worker: workerRef,
+        runModel,
+      }}
+    >
+      {children}
+    </Provider>
+  );
+};

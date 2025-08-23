@@ -1,8 +1,8 @@
 import React from "react";
 import { type ModelDetail } from "@/schema/model";
 import { TimerIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { formatReadableFileSize } from "@/utils/format";
+// import { Badge } from "@/components/ui/badge";
+// import { formatReadableFileSize } from "@/utils/format";
 
 type ModelItemProps = {
   modelDetail: ModelDetail;
@@ -15,10 +15,10 @@ export const ModelItem: React.FC<ModelItemProps> = ({
 }) => {
   return (
     <div
-      className="w-full rounded-md p-2 hover:bg-accent transition-colors cursor-pointer border"
+      className="w-full rounded-md p-2 hover:bg-accent transition-colors cursor-pointer border active:bg-accent"
       onClick={() => onSelect(modelDetail)}
     >
-      <div className="flex gap-2">
+      <div className="flex gap-4">
         <div className="flex flex-col flex-1">
           <p className="text-sm font-medium line-clamp-2">{modelDetail.name}</p>
           <span className="text-xs text-muted-foreground mt-px">
@@ -32,11 +32,11 @@ export const ModelItem: React.FC<ModelItemProps> = ({
           </div>
         </div>
         <div className="">
-          {modelDetail.size !== undefined && (
+          {/* {modelDetail.size !== undefined && (
             <Badge variant="outline">
               {formatReadableFileSize(modelDetail.size)}
             </Badge>
-          )}
+          )} */}
         </div>
       </div>
     </div>
