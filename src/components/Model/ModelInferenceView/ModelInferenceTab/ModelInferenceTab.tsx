@@ -5,7 +5,7 @@ import {
 import type { ModelDetail } from "@/schema/model";
 import { SummarizeInferenceForm } from "./InferenceForm/SummarizeInferenceForm";
 import { SummarizeResultPanel } from "./ResultPanel";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { SentimentAnalysisForm } from "./InferenceForm/SentimentAnalysisForm";
 import {
   useInferenceSentimentAnalysis,
