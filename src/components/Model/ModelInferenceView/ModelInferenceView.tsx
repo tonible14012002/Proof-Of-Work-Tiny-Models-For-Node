@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { FileLoadInfo, ModelDetail, WorkerMessage } from "@/schema/model";
-import { DownloadIcon, TrashIcon } from "lucide-react";
+import { DownloadIcon, LoaderIcon, TrashIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ModelInferenceTab } from "./ModelInferenceTab";
 import { useWorkerContext } from "@/provider/ModelWorkerProvider";
 import { toast } from "sonner";
 import { MODEL_WORKER_EVENT } from "@/constants/event";
+import { DTYPE_OPTIONS, type DType } from "@/constants/model";
 import { useModels } from "@/provider/ModelsProvider";
 import { cn } from "@/lib/utils";
 import { ModelInfoCard } from "./ModelInfoCard";
@@ -16,6 +17,8 @@ import {
   formatReadableFileSize,
 } from "@/utils/format";
 import { ModelFileLoadBoard } from "./ModelFileLoadBoard";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ModelInferenceViewProps {
   selectedModel: ModelDetail;
@@ -34,6 +37,7 @@ export const ModelInferenceView = ({
 
   const [model, setModel] = useState(selectedModel);
   const { worker, loadModel } = useWorkerContext();
+  const [isLoadingModel, setIsLoadingModel] = useState(false);
   const { mutateList, models } = useModels();
 
   const isSaved = useMemo(() => {
@@ -42,8 +46,9 @@ export const ModelInferenceView = ({
   }, [model, models]);
 
   const onLoadModelBtn = () => {
-    if (!selectedModel) return;
-    loadModel(selectedModel);
+    if (!model) return;
+    setIsLoadingModel(true);
+    loadModel(model);
   };
 
   const handleExport = () => {
@@ -85,6 +90,7 @@ export const ModelInferenceView = ({
       }
 
       if (data.type === MODEL_WORKER_EVENT.WORKER.ready) {
+        setIsLoadingModel(false);
         const timeTrack = data.data?.timeTrack ?? {};
         setModel((prev) => {
           return {
@@ -98,6 +104,7 @@ export const ModelInferenceView = ({
       }
 
       if (data.type === MODEL_WORKER_EVENT.WORKER.error) {
+        setIsLoadingModel(false);
         const error = data.data?.error ?? "Unknown error";
         toast.error(`Model ${model.id} error: ${error}`);
       }
@@ -143,11 +150,37 @@ export const ModelInferenceView = ({
             </TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-muted-foreground">DType:</label>
+              <Select
+                value={model.dtype || "auto"}
+                onValueChange={(value) => {
+                  setModel((prev) => ({
+                    ...prev,
+                    dtype: value as DType,
+                  }));
+                }}
+              >
+                <SelectTrigger className="w-24 h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DTYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <Button
               onClick={onLoadModelBtn}
               size="sm"
-              disabled={Boolean(model.loaded)}
+              disabled={Boolean(model.loaded) || isLoadingModel}
             >
+              {isLoadingModel && (
+                <LoaderIcon size={12} className="animate-spin" />
+              )}
               Load Model
             </Button>
             <Button size="sm" variant="outline" onClick={handleExport}>
@@ -159,7 +192,7 @@ export const ModelInferenceView = ({
             </Button>
           </div>
         </div>
-        <div className={cn("md:overflow-y-auto  flex-1 py-4 -mx-4 px-4")}>
+        <div className={cn("md:overflow-y-auto  flex-1 pt-4 pb-8 -mx-4 px-4")}>
           <div className="w-full grid lg:grid-cols-2 gap-4 mb-4">
             <ModelInfoCard
               title="Basic Information"
@@ -168,13 +201,20 @@ export const ModelInferenceView = ({
                 { label: "Task", value: model.task, type: "text" },
                 {
                   label: "Status",
-                  value: model.loaded ? "Loaded" : "Not loaded",
+                  value: model.loaded ? (
+                    <Badge>Loaded</Badge>
+                  ) : (
+                    <Badge variant="destructive">Not loaded</Badge>
+                  ),
                   type: "text",
                 },
                 {
                   type: "react-node",
                   node: (
-                    <div className="border -mx-1.5 px-1.5 py-1 rounded-md min-h-[40px] flex-1 text-xs" key="config">
+                    <div
+                      className="border -mx-1.5 px-1.5 py-1 rounded-md min-h-[40px] flex-1 text-xs"
+                      key="config"
+                    >
                       <div className="mb-1">Additional Config</div>
                       <span className="text-accent-foreground/70">
                         {JSON.stringify(model.config || {}, null, 2)}
@@ -189,7 +229,12 @@ export const ModelInferenceView = ({
               infos={[
                 {
                   type: "react-node",
-                  node: <ModelFileLoadBoard loadFileStatus={model.loadFiles} key="fileload" />,
+                  node: (
+                    <ModelFileLoadBoard
+                      loadFileStatus={model.loadFiles}
+                      key="fileload"
+                    />
+                  ),
                 },
                 {
                   type: "react-node",
@@ -203,7 +248,7 @@ export const ModelInferenceView = ({
                 {
                   type: "text",
                   label: "Load time",
-                  value: formatReadableDurationInMs(model.loadTime)
+                  value: formatReadableDurationInMs(model.loadTime),
                 },
                 {
                   type: "text",

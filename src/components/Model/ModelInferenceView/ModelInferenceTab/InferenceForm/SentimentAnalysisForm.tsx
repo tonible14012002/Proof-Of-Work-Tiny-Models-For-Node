@@ -1,0 +1,79 @@
+import { FormSelection } from "@/components/common/Form/FormSelect";
+import { FormTextArea } from "@/components/common/Form/FormTextArea";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import z from "zod";
+
+interface SentimentAnalysisProps {
+  modelId: string;
+  onInferenceSubmit?: (_: any) => void;
+}
+
+const schema = z.object({
+  input: z.string().min(1, "Input is required"),
+  topK: z
+    .string()
+    .min(1)
+    .optional()
+    .refine((val) => val === "null" || !isNaN(Number(val)), {
+      message: "Top K must be a number or null value",
+    }),
+});
+
+export const SentimentAnalysisForm = (props: SentimentAnalysisProps) => {
+  const { onInferenceSubmit } = props;
+  const formInstance = useForm({
+    defaultValues: {
+      input: "",
+      topK: "null",
+    },
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = formInstance.handleSubmit((data) => {
+    onInferenceSubmit?.(data);
+  });
+
+  return (
+    <Form {...formInstance}>
+      <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
+        <h2 className="font-semibold">Inference</h2>
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <label
+              className="block text-xs text-muted-foreground font-medium"
+              htmlFor="user-input"
+            >
+              User input
+            </label>
+            <FormTextArea
+              name="input"
+              cols={5}
+              className="min-h-[100px] text-sm"
+            />
+          </div>
+          <div className="space-y-1">
+            <label
+              className="block text-xs text-muted-foreground font-medium"
+              htmlFor="top-k"
+            >
+              Top K
+            </label>
+            <FormSelection
+              name="topK"
+              options={["null", 1, 2, 3, 4, 5].map((value) => ({
+                label: value.toString(),
+                value: value.toString(),
+              }))}
+            />
+          </div>
+          <Button className="w-full" variant="default" type="submit">
+            Submit
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+};

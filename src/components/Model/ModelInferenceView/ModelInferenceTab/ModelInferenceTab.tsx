@@ -1,14 +1,35 @@
+import {
+  useInferenceSummarizer,
+  type SummarizerInputParams,
+} from "@/hooks/inference/useInferenceSummarizer";
+import type { ModelDetail } from "@/schema/model";
+import { SummarizeInferenceForm } from "./InferenceForm/SummarizeInferenceForm";
+import { SummarizeResultPanel } from "./ResultPanel";
+import { Fragment, useState } from "react";
+import { SentimentAnalysisForm } from "./InferenceForm/SentimentAnalysisForm";
+import {
+  useInferenceSentimentAnalysis,
+  type SentimentAnalysisInputParams,
+} from "@/hooks/inference/useInferenceSentimentAnalysis";
+import { SentimentAnalysisResultPanel } from "./ResultPanel/SentimentAnalysisResultPanel";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { MODEL_WORKER_EVENT } from "@/constants/event";
-import { useWorkerContext } from "@/provider/ModelWorkerProvider";
-import type {
-  InferenceResult,
-  ModelDetail,
-  WorkerMessage,
-} from "@/schema/model";
-import { useCallback, useEffect, useState } from "react";
+import { formatReadableDurationInMs } from "@/utils/format";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Text2TextGenerationForm } from "./InferenceForm/Text2TextGenerationForm";
+import { useInferenceText2Text } from "@/hooks/inference/useInferenceText2Text";
+import { Text2TextResultPanel } from "./ResultPanel/Text2TextResultPanel";
+import { ZeroShotClassificationForm } from "./InferenceForm/ZeroShotClassificationForm";
+import {
+  useInferenceZeroShotClassification,
+  type ZeroShotClassificationInputParams,
+} from "@/hooks/inference/useInferenceZeroShotClassification";
+import { ZeroShotClassificationResultPanel } from "./ResultPanel/ZeroShotClassificationResultPanel";
+import { TokenClassificationForm } from "./InferenceForm/TokenClassificationForm";
+import {
+  useInferenceTokenClassification,
+  type TokenClassificationInputParams,
+} from "@/hooks/inference/useInferenceTokenClassification";
+import { TokenClassificationResultPanel } from "./ResultPanel/TokenClassificationResultPanel";
 
 interface ModelInferenceTabProps {
   model: ModelDetail;
@@ -16,97 +37,187 @@ interface ModelInferenceTabProps {
 
 export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
   const { model } = props;
+  const { summarize, isPending: isPendingSummarize } = useInferenceSummarizer(
+    model.id
+  );
+  const { analyze, isPending: isPendingAnalyze } =
+    useInferenceSentimentAnalysis(model.id);
 
-  const [inputValue, setInputValue] = useState("");
-  const { runModel, worker } = useWorkerContext();
+  const { generate, isPending: isPendingGenerate } = useInferenceText2Text(
+    model.id
+  );
 
-  const [result, setResult] = useState<{
-    latency: number;
-    data: string;
-  }>();
+  const { classify, isPending: isPendingClassify } = useInferenceZeroShotClassification(
+    model.id
+  );
 
-  const onModelInferenceResponse = useCallback((event: MessageEvent) => {
-    const payload = event.data as WorkerMessage;
-    if (payload.type === MODEL_WORKER_EVENT.WORKER.inference_complete) {
-      const { latency, data } = payload.data as InferenceResult;
-      const displayData =
-        typeof data === "object" ? JSON.stringify(data) : data;
-      setResult({ latency, data: displayData });
+  const { classify: classifyTokens, isPending: isPendingTokenClassify } = useInferenceTokenClassification(
+    model.id
+  );
+
+  const [result, setResult] = useState<any>(null);
+
+  const onInference = async (data: any) => {
+    switch (model.task) {
+      case "summarization":
+        {
+          setResult(null);
+          const result = await summarize({
+            text: data.input,
+          } as SummarizerInputParams);
+
+          setResult(result);
+        }
+        break;
+
+      case "sentiment-analysis":
+        {
+          setResult(null);
+          const result = await analyze({
+            text: data.input,
+            options: {
+              top_k: data.topK === "null" ? null : Number(data.topK),
+            },
+          } as SentimentAnalysisInputParams);
+          setResult(result);
+        }
+        break;
+      case "text2text-generation":
+        {
+          setResult(null);
+          const result = await generate({
+            text: data.input,
+            options:
+              data.max_new_tokens && !isNaN(Number(data.max_new_tokens))
+                ? {
+                    max_new_tokens: Number(data.max_new_tokens),
+                  }
+                : undefined,
+          });
+          setResult(result);
+        }
+        break;
+      case "zero-shot-classification":
+        {
+          setResult(null);
+          const result = await classify({
+            text: data.text,
+            labels: data.labels,
+            template: data.template
+          } as ZeroShotClassificationInputParams);
+          setResult(result);
+        }
+        break;
+      case "token-classification":
+        {
+          setResult(null);
+          const result = await classifyTokens({
+            text: data.text,
+            options: data.options,
+          } as TokenClassificationInputParams);
+          setResult(result);
+        }
+        break;
     }
-  }, []);
-
-  useEffect(() => {
-    if (!worker.current) return;
-
-    worker.current.addEventListener("message", onModelInferenceResponse);
-    const workerRefCleaner = worker.current;
-
-    return () => {
-      workerRefCleaner.removeEventListener("message", onModelInferenceResponse);
-    };
-  }, [onModelInferenceResponse, worker]);
-
-  const onChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(event.target.value);
   };
 
-  const onSubmit = async (e: any) => {
-    e.preventDefault();
-    const val = inputValue.trim();
-    if (!val) return;
-    const labels = ["payment", "not payment"];
-    runModel(model.id, model.task, val, {
-      labels,
-      options: {
-        hypothesis_template: "This text is {label} related.",
-      },
-    });
-  };
+  const isPending = isPendingSummarize || isPendingAnalyze || isPendingGenerate || isPendingClassify || isPendingTokenClassify;
 
   return (
     <>
-      <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <h2 className="text-lg font-semibold">Inference</h2>
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="user-input"
-            >
-              User input
-            </label>
-            <Textarea
-              id="user-input"
-              cols={5}
-              className="min-h-[100px]"
-              value={inputValue}
-              onChange={onChange}
-            />
-          </div>
-          <Button className="w-full" variant="default" type="submit">
-            Submit
-          </Button>
-        </div>
-      </form>
+      {getInferenceForm({
+        model,
+        onInferenceSubmit: onInference,
+      })}
       <div className="rounded-lg space-y-2 p-4 mt-4 border">
-        <h3 className="font-medium text-lg">Inference Result</h3>
-        <div className="flex flex-wrap gap-2">
-          {result?.latency && (
-            <Badge variant="default">
-              Latency: {Math.round(result.latency * 100) / 100}ms
-            </Badge>
-          )}
-        </div>
-        <div className="mt-4 bg-muted p-4 rounded-lg break-words">
-          {result ? (
-            <>{result.data}</>
-          ) : (
-            <span className="text-sm text-muted-foreground">
-              Empty.
-            </span>
-          )}
-        </div>
+        <h3 className="font-medium">Inference Result</h3>
+        {result && result.latency && (
+          <div className="">
+            <Badge>Latency: {formatReadableDurationInMs(result.latency)}</Badge>
+          </div>
+        )}
+        {isPending && (
+          <div className="">
+            <Skeleton className="h-[22px] w-[40px]" />
+          </div>
+        )}
+        {getInferenceResultPanel({
+          model,
+          isPending,
+          result,
+        })}
       </div>
     </>
   );
+};
+
+type GetInferenceFormParams = {
+  model: ModelDetail;
+  onInferenceSubmit?: (_: any) => void;
+};
+
+const getInferenceForm = ({
+  model,
+  onInferenceSubmit,
+}: GetInferenceFormParams) => {
+  let Form: any = null;
+  switch (model.task) {
+    case "summarization":
+      Form = SummarizeInferenceForm;
+      break;
+    case "sentiment-analysis":
+      Form = SentimentAnalysisForm;
+      break;
+    case "text2text-generation":
+      Form = Text2TextGenerationForm;
+      break;
+    case "zero-shot-classification":
+      Form = ZeroShotClassificationForm;
+      break;
+    case "token-classification":
+      Form = TokenClassificationForm;
+      break;
+  }
+
+  if (!Form) {
+    return null;
+  }
+  return <Form onInferenceSubmit={onInferenceSubmit} modelId={model.id} />;
+};
+
+type GetInferenceResultPanelParams = {
+  model: ModelDetail;
+  isPending: boolean;
+  result: any;
+};
+
+const getInferenceResultPanel = ({
+  model,
+  isPending,
+  result,
+}: GetInferenceResultPanelParams) => {
+  let PanelComp: any = null;
+  switch (model.task) {
+    case "summarization":
+      PanelComp = SummarizeResultPanel;
+      break;
+    case "sentiment-analysis":
+      PanelComp = SentimentAnalysisResultPanel;
+      break;
+    case "text2text-generation":
+      PanelComp = Text2TextResultPanel;
+      break;
+    case "zero-shot-classification":
+      PanelComp = ZeroShotClassificationResultPanel;
+      break;
+    case "token-classification":
+      PanelComp = TokenClassificationResultPanel;
+      break;
+  }
+
+  if (!PanelComp) {
+    return null;
+  }
+
+  return <PanelComp isPending={isPending} result={result} />;
 };
