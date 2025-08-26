@@ -12,7 +12,8 @@ interface ModelWorkerContextValues {
     modelId: string,
     task: ModelDetail["task"],
     input: string | string[],
-    params: any
+    params: any,
+    threadId?: string
   ) => Promise<void>;
 }
 
@@ -38,7 +39,11 @@ export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
         data: {
           task: model.task,
           modelPath: model.modelPath,
-          config: model.config || {},
+          config: {
+            dtype: model.dtype || "auto",
+            ...(model.config || {})
+          },
+          dtype: model.dtype || "auto",
         },
       })
     );
@@ -48,7 +53,8 @@ export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
     modelId: string,
     task: ModelDetail["task"],
     input: string | string[],
-    params: any
+    params: any,
+    threadId?: string
   ) => {
     if (!workerRef.current) return;
     workerRef.current.postMessage(
@@ -60,6 +66,7 @@ export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
           task,
           params,
         } as ModelInferenceInput,
+        threadId,
       })
     );
   };

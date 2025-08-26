@@ -20,7 +20,7 @@ export const ModelItem: React.FC<ModelItemProps> = ({
     >
       <div className="flex gap-4">
         <div className="flex flex-col flex-1">
-          <p className="text-sm font-medium line-clamp-2">{modelDetail.name}</p>
+          <p className="text-xs md:text-sm font-medium line-clamp-2">{modelDetail.name}</p>
           <span className="text-xs text-muted-foreground mt-px">
             {modelDetail.task ?? "No task assigned"}
           </span>
