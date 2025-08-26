@@ -1,49 +1,6 @@
 import type { ModelDetail } from "@/schema/model";
 
 export const DEFAULT_MODELS: ModelDetail[] = [
-  // {
-  //   id: "Xenova/ms-marco-TinyBERT-L-2-v2 INT8",
-  //   name: "Xenova/ms-marco-TinyBERT-L-2-v2",
-  //   modelPath: "Xenova/ms-marco-TinyBERT-L-2-v2",
-  //   // For loading model
-  //   task: "none-pipline-supported",
-  //   config: {
-  //     dtype: "int8",
-  //   },
-  //   loadFiles: {},
-  //   loaded: false,
-  // },
-  // {
-  //   id: "Xenova/ms-marco-TinyBERT-L-2-v2 FP16",
-  //   name: "Xenova/ms-marco-TinyBERT-L-2-v2",
-  //   modelPath: "Xenova/ms-marco-TinyBERT-L-2-v2",
-  //   task: "none-pipline-supported",
-  //   config: {
-  //     dtype: "fp16",
-  //   },
-  //   loadFiles: {},
-  //   loaded: false,
-  // },
-  // {
-  //   id: "BAAI/bge-small-en INT8",
-  //   name: "BAAI/bge-small-en",
-  //   modelPath: "BAAI/bge-small-en",
-  //   task: "none-pipline-supported",
-  //   config: {
-  //     dtype: "int8",
-  //   },
-  //   loadFiles: {},
-  //   loaded: false,
-  // },
-  // {
-  //   id: "TaylorAI/gte-tiny",
-  //   name: "TaylorAI/gte-tiny",
-  //   modelPath: "TaylorAI/gte-tiny",
-  //   task: "none-pipline-supported",
-  //   config: {},
-  //   loadFiles: {},
-  //   loaded: false,
-  // },
   {
     id: "Xenova/distilbert-base-uncased-mnli",
     name: "Xenova/distilbert-base-uncased-mnli",
@@ -96,17 +53,6 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     loadFiles: {},
     loaded: false,
   },
-  
-  // {
-  //   id: "Xenova/t5-small",
-  //   name: "Xenova/t5-small",
-  //   modelPath: "Xenova/t5-small",
-  //   task: "text2text-generation",
-  //   config: {
-  //   },
-  //   loadFiles: {},
-  //   loaded: false,
-  // },
   {
     id: "Xenova/distilbert-base-uncased-finetuned-sst-2-english",
     name: "Xenova/distilbert-base-uncased-finetuned-sst-2-english",

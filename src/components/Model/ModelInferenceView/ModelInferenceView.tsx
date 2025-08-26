@@ -18,7 +18,13 @@ import {
 } from "@/utils/format";
 import { ModelFileLoadBoard } from "./ModelFileLoadBoard";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ModelInferenceViewProps {
   selectedModel: ModelDetail;
@@ -153,6 +159,7 @@ export const ModelInferenceView = ({
             <div className="flex items-center gap-2">
               <label className="text-xs text-muted-foreground">DType:</label>
               <Select
+                disabled={isLoadingModel || Boolean(model.loaded)}
                 value={model.dtype || "auto"}
                 onValueChange={(value) => {
                   setModel((prev) => ({

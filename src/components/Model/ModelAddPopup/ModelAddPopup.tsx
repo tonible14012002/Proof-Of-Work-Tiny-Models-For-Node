@@ -12,6 +12,7 @@ import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 export interface ModelAddPopupProps {
@@ -67,8 +68,17 @@ export const ModelAddPopup = (props: ModelAddPopupProps) => {
               />
             </div>
             <DialogFooter>
-              <Button variant="outline">Cancel</Button>
-              <Button type="submit">Submit</Button>
+              <DialogTrigger asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogTrigger>
+              <Button
+                type="submit"
+                onClick={() => {
+                  toast("This action is not yet supported!");
+                }}
+              >
+                Submit
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
