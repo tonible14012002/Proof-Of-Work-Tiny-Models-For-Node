@@ -5,7 +5,7 @@ export const makeMessage = <T = any>(msg: WorkerMessage<T>) => {
 };
 
 export const startTimer = (
-  timerRef: Record<string, { begin?: number; end?: number, duration?: number }>,
+  timerRef: Record<string, { begin?: number; end?: number; duration?: number }>,
   key: string
 ) => {
   const now = performance.now();
@@ -17,7 +17,7 @@ export const startTimer = (
 };
 
 export const endTimer = (
-  timerRef: Record<string, { begin?: number; end?: number, duration?: number}>,
+  timerRef: Record<string, { begin?: number; end?: number; duration?: number }>,
   key: string
 ) => {
   const now = performance.now();

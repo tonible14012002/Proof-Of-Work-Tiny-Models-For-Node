@@ -6,7 +6,7 @@ type InfoItem =
   | {
       type: "text";
       label: string;
-      value: string;
+      value: string | ReactNode;
     }
   | {
       type: "react-node";
@@ -26,7 +26,7 @@ export const ModelInfoCard = (props: ModelInfoProps) => {
   return (
     <div className="p-3 rounded-xl border flex flex-col">
       <div className="mb-3">
-        <h3 className="font-semibold text-sm">{props.title}</h3>
+        <h3 className="font-semibold text-xs md:text-sm">{props.title}</h3>
       </div>
       <div className="flex flex-col gap-1 flex-1">
         {isEmpty ? (
@@ -41,9 +41,13 @@ export const ModelInfoCard = (props: ModelInfoProps) => {
           return (
             <div key={index} className="flex justify-between gap-4">
               <span className="text-xs shrink-0">{info.label}</span>
-              <span className="text-muted-foreground text-xs truncate">
-                {info.value}
-              </span>
+              {typeof info.value === "string" ? (
+                <span className="text-muted-foreground text-xs truncate">
+                  {info.value}
+                </span>
+              ) : (
+                info.value
+              )}
             </div>
           );
         })}
@@ -52,10 +56,12 @@ export const ModelInfoCard = (props: ModelInfoProps) => {
   );
 };
 
-export const convertFileInfosToDisplay = (fileLoadInfo: Record<string, FileLoadInfo>) => {
+export const convertFileInfosToDisplay = (
+  fileLoadInfo: Record<string, FileLoadInfo>
+) => {
   return Object.entries(fileLoadInfo).map(([file, fileInfo]) => ({
     label: file,
     value: formatReadableDurationInMs(fileInfo.duration),
-    type: "text" as const
+    type: "text" as const,
   }));
 };
