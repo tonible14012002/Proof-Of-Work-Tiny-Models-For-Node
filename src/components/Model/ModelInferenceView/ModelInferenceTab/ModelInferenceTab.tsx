@@ -152,7 +152,7 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
         onInferenceSubmit: onInference,
       })}
       <div className="rounded-lg space-y-2 p-4 mt-4 border">
-        <h3 className="font-medium">Inference Result</h3>
+        <h3 className="font-semibold text-xs md:text-sm mb-3">Inference Result</h3>
         {result && result.latency && (
           <div className="">
             <Badge>Latency: {formatReadableDurationInMs(result.latency)}</Badge>

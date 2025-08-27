@@ -9,6 +9,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     config: {
       device: "auto",
     },
+    metadata: {
+      description: "A distilled version of BERT fine-tuned on the Multi-Genre Natural Language Inference (MNLI) dataset. This model can determine the relationship between two sentences: entailment, contradiction, or neutral. Because it's trained on MNLI, it's commonly used for zero-shot classification by reframing classification as an NLI task - asking whether the input text entails a hypothesis about a candidate label.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/distilbert-base-uncased-mnli",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -20,6 +24,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     config: {
       device: "auto",
     },
+    metadata: {
+      description: "MobileBERT model fine-tuned on MNLI dataset. A lightweight BERT variant optimized for mobile and edge devices while maintaining high performance on natural language inference tasks. Like the DistilBERT version, it's used for zero-shot classification by treating it as an NLI problem, but with better efficiency for resource-constrained environments.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/mobilebert-uncased-mnli",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -29,6 +37,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/bart-large-cnn",
     task: "summarization",
     config: {},
+    metadata: {
+      description: "BART model fine-tuned for summarization on CNN Daily Mail articles. This model can generate concise summaries of long text documents while preserving key information. It's specifically trained on news articles, making it ideal for summarizing factual content and extracting the most important points from longer texts.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/bart-large-cnn",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -38,6 +50,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/distilbart-cnn-6-6",
     task: "summarization",
     config: {},
+    metadata: {
+      description: "A distilled version of BART optimized for CNN summarization. This smaller model maintains good summarization quality while being more efficient than the full BART model. It's perfect for applications where you need fast summarization without sacrificing too much quality, especially for news and article content.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/distilbart-cnn-6-6",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -47,6 +63,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/bert-base-multilingual-cased-ner-hrl",
     task: "token-classification",
     config: {},
+    metadata: {
+      description: "Multilingual BERT model fine-tuned for Named Entity Recognition (NER) on the HRL dataset. Can identify entities like persons, organizations, and locations in multiple languages. This makes it particularly useful for processing international documents, multilingual content, and applications that need to extract structured information from text in various languages.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/bert-base-multilingual-cased-ner-hrl",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -56,6 +76,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/distilbert-base-uncased-finetuned-sst-2-english",
     task: "sentiment-analysis",
     config: {},
+    metadata: {
+      description: "A distilled version of BERT fine-tuned for sentiment analysis on the SST-2 dataset. This model can classify text as positive or negative sentiment with high accuracy. It's specifically designed for binary sentiment classification, making it ideal for social media monitoring, customer feedback analysis, and any application requiring quick positive/negative sentiment detection.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/distilbert-base-uncased-finetuned-sst-2-english",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -65,6 +89,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/bert-base-multilingual-uncased-sentiment",
     task: "text-classification",
     config: {},
+    metadata: {
+      description: "Multilingual BERT model fine-tuned for sentiment analysis. Can analyze sentiment in multiple languages, making it useful for international applications. This model is perfect for global businesses, international social media monitoring, and any scenario where you need to understand sentiment across different languages without training separate models for each language.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/bert-base-multilingual-uncased-sentiment",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -74,6 +102,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/finbert",
     task: "text-classification",
     config: {},
+    metadata: {
+      description: "BERT model fine-tuned specifically for financial sentiment analysis. Optimized for analyzing sentiment in financial texts, news, and reports. This model is specialized for financial domain language, making it ideal for analyzing market sentiment, financial news, earnings reports, and any text where understanding financial context is crucial for accurate sentiment assessment.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/finbert",
+    },
     loadFiles: {},
     loaded: false,
   },
@@ -83,6 +115,10 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     modelPath: "Xenova/toxic-bert",
     task: "text-classification",
     config: {},
+    metadata: {
+      description: "BERT model fine-tuned for toxic comment classification. Can identify various types of toxic content including hate speech, threats, and insults. This model is essential for content moderation, online community management, and any platform that needs to automatically detect and filter harmful content to maintain safe user environments.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/toxic-bert",
+    },
     loadFiles: {},
     loaded: false,
   },

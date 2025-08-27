@@ -11,6 +11,7 @@ import { DTYPE_OPTIONS, type DType } from "@/constants/model";
 import { useModels } from "@/provider/ModelsProvider";
 import { cn } from "@/lib/utils";
 import { ModelInfoCard } from "./ModelInfoCard";
+import { ModelMetadataCard } from "./ModelMetadataCard";
 import { getTotalFileInfo } from "@/utils/model";
 import {
   formatReadableDurationInMs,
@@ -155,7 +156,7 @@ export const ModelInferenceView = ({
               Fine Tuning Mode
             </TabsTrigger>
           </TabsList>
-          <div className="flex items-center gap-2">
+          <div className="flex md:items-center items-start gap-2 md:flex-row flex-col">
             <div className="flex items-center gap-2">
               <label className="text-xs text-muted-foreground">DType:</label>
               <Select
@@ -180,6 +181,7 @@ export const ModelInferenceView = ({
                 </SelectContent>
               </Select>
             </div>
+            <div className="flex items-center gap-2">
             <Button
               onClick={onLoadModelBtn}
               size="sm"
@@ -197,9 +199,16 @@ export const ModelInferenceView = ({
             <Button size="sm" className="w-8 h-8" variant="destructive">
               <TrashIcon />
             </Button>
+            </div>
           </div>
         </div>
         <div className={cn("md:overflow-y-auto  flex-1 pt-4 pb-8 -mx-4 px-4")}>
+          {/* Model Metadata Section */}
+          <div className="w-full mb-6">
+            <ModelMetadataCard model={model} />
+          </div>
+          
+          {/* Model Information Cards */}
           <div className="w-full grid lg:grid-cols-2 gap-4 mb-4">
             <ModelInfoCard
               title="Basic Information"
