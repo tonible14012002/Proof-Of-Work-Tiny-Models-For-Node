@@ -1,10 +1,10 @@
 import { FormTextArea } from "@/components/common/Form/FormTextArea";
-import { FormSelection } from "@/components/common/Form/FormSelect";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
 
 interface TokenClassificationFormProps {
   modelId: string;
@@ -46,7 +46,10 @@ export const TokenClassificationForm = (
   return (
     <Form {...formInstance}>
       <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <h3 className="font-semibold text-xs md:text-sm mb-3">Token Classification</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-xs md:text-sm">Token Classification</h3>
+          <ExamplePromptsPopover currentTask="token-classification" />
+        </div>
         <div className="space-y-4">
           <div className="space-y-1">
             <label
@@ -57,11 +60,12 @@ export const TokenClassificationForm = (
             </label>
             <FormTextArea
               name="input"
+              cols={5}
               className="text-sm"
               placeholder="Enter the text for token classification..."
             />
           </div>
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <label
               className="block text-xs text-muted-foreground font-medium"
               htmlFor="aggregation-strategy"
@@ -81,7 +85,7 @@ export const TokenClassificationForm = (
             <p className="text-xs text-muted-foreground">
               Strategy for aggregating token predictions
             </p>
-          </div>
+          </div> */}
           <Button type="submit" className="w-full">
             Classify Tokens
           </Button>

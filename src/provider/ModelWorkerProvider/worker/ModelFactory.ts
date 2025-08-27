@@ -118,7 +118,7 @@ export class ModelFactory {
       }
       case "token-classification": {
         const typedModel = model as TokenClassificationPipeline;
-        const result = await typedModel(input, params?.options);
+        const result = await typedModel(input);
         return result;
       }
     }

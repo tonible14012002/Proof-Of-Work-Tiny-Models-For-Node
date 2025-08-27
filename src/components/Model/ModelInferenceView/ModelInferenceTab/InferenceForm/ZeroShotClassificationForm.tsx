@@ -5,6 +5,7 @@ import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
 
 interface ZeroShotClassificationFormProps {
   modelId: string;
@@ -46,7 +47,10 @@ export const ZeroShotClassificationForm = (
   return (
     <Form {...formInstance}>
       <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <h3 className="font-semibold text-xs md:text-sm mb-3">Zero-Shot Classification</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-xs md:text-sm">Zero-Shot Classification</h3>
+          <ExamplePromptsPopover currentTask="zero-shot-classification" />
+        </div>
         <div className="space-y-4">
           <div className="space-y-1">
             <label
@@ -57,6 +61,7 @@ export const ZeroShotClassificationForm = (
             </label>
             <FormTextArea
               name="input"
+              cols={5}
               className="text-sm"
               placeholder="Enter the text you want to classify..."
             />
@@ -76,22 +81,22 @@ export const ZeroShotClassificationForm = (
             <p className="text-xs text-muted-foreground">
               Enter labels separated by commas (e.g., "positive, negative, neutral")
             </p>
-           <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="labels"
-            >
-              Hypothesis template
-            </label>
-            <FormInput
-              name="template"
-              placeholder="This is {} related"
-              className="text-sm"
-            />
-            <p className="text-xs text-muted-foreground">
-              Use &#123;&#125; as placeholder for label
-            </p>
-          </div>         </div>
+            <div className="space-y-1">
+              <label
+                className="block text-xs text-muted-foreground font-medium"
+                htmlFor="labels"
+              >
+                Hypothesis template
+              </label>
+              <FormInput
+                name="template"
+                placeholder="This is {} related"
+                className="text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                Use &#123;&#125; as placeholder for label
+              </p>
+            </div>         </div>
           <Button type="submit" className="w-full">
             Classify
           </Button>
