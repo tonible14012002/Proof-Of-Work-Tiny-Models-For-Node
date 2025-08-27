@@ -5,6 +5,7 @@ import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
 
 interface SentimentAnalysisProps {
   modelId: string;
@@ -39,7 +40,10 @@ export const SentimentAnalysisForm = (props: SentimentAnalysisProps) => {
   return (
     <Form {...formInstance}>
       <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <h3 className="font-semibold text-xs md:text-sm mb-3">Inference</h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-xs md:text-sm">Sentiment Analysis</h3>
+          <ExamplePromptsPopover currentTask="sentiment-analysis" />
+        </div>
         <div className="space-y-4">
           <div className="space-y-1">
             <label
@@ -52,6 +56,7 @@ export const SentimentAnalysisForm = (props: SentimentAnalysisProps) => {
               name="input"
               cols={5}
               className="min-h-[100px] text-sm"
+              placeholder="Enter the text for sentiment analysis..."
             />
           </div>
           <div className="space-y-1">
