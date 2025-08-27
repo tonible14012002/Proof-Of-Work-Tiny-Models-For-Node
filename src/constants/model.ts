@@ -21,7 +21,7 @@ export type TaskWithExamples = Extract<ModelDetail["task"],
   | "zero-shot-classification"
   | "token-classification"
   | "text-classification"
-  | "text2text-generation"
+  // | "text2text-generation"
 >;
 
 export const EXAMPLE_PROMPTS: Record<TaskWithExamples, string[]> = {
@@ -96,13 +96,13 @@ export const EXAMPLE_PROMPTS: Record<TaskWithExamples, string[]> = {
     "The financial outlook appears stable with moderate growth projections for Q4.",
     "This is the worst decision ever made by this incompetent management team."
   ],
-  "text2text-generation": [
-    "Translate this text to French: Hello, how are you today?",
-    "Summarize the following article: Artificial intelligence has transformed many industries...",
-    "Generate a creative story about a robot learning to paint.",
-    "Answer this question: What is the capital of Japan?",
-    "Rewrite this sentence in a more formal tone: Hey, can you help me with this?"
-  ]
+  // "text2text-generation": [
+  //   "Translate this text to French: Hello, how are you today?",
+  //   "Summarize the following article: Artificial intelligence has transformed many industries...",
+  //   "Generate a creative story about a robot learning to paint.",
+  //   "Answer this question: What is the capital of Japan?",
+  //   "Rewrite this sentence in a more formal tone: Hey, can you help me with this?"
+  // ]
 };
 
 
