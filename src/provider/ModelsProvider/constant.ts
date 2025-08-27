@@ -12,7 +12,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     loadFiles: {},
     loaded: false,
   },
-    {
+  {
     id: "Xenova/mobilebert-uncased-mnli",
     name: "Xenova/mobilebert-uncased-mnli",
     modelPath: "Xenova/mobilebert-uncased-mnli",
@@ -23,13 +23,12 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     loadFiles: {},
     loaded: false,
   },
-    {
+  {
     id: "Xenova/bart-large-cnn",
     name: "Xenova/bart-large-cnn",
     modelPath: "Xenova/bart-large-cnn",
     task: "summarization",
-    config: {
-    },
+    config: {},
     loadFiles: {},
     loaded: false,
   },
@@ -38,18 +37,16 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     name: "Xenova/distilbart-cnn-6-6",
     modelPath: "Xenova/distilbart-cnn-6-6",
     task: "summarization",
-    config: {
-    },
+    config: {},
     loadFiles: {},
     loaded: false,
   },
-    {
+  {
     id: "Xenova/bert-base-multilingual-cased-ner-hrl",
     name: "Xenova/bert-base-multilingual-cased-ner-hrl",
     modelPath: "Xenova/bert-base-multilingual-cased-ner-hrl",
     task: "token-classification",
-    config: {
-    },
+    config: {},
     loadFiles: {},
     loaded: false,
   },
@@ -58,9 +55,35 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     name: "Xenova/distilbert-base-uncased-finetuned-sst-2-english",
     modelPath: "Xenova/distilbert-base-uncased-finetuned-sst-2-english",
     task: "sentiment-analysis",
-    config: {
-    },
+    config: {},
     loadFiles: {},
     loaded: false,
-  }
+  },
+  {
+    id: "Xenova/bert-base-multilingual-uncased-sentiment",
+    name: "Xenova/bert-base-multilingual-uncased-sentiment",
+    modelPath: "Xenova/bert-base-multilingual-uncased-sentiment",
+    task: "text-classification",
+    config: {},
+    loadFiles: {},
+    loaded: false,
+  },
+  {
+    id: "Xenova/finbert",
+    name: "Xenova/finbert",
+    modelPath: "Xenova/finbert",
+    task: "text-classification",
+    config: {},
+    loadFiles: {},
+    loaded: false,
+  },
+    {
+    id: "Xenova/toxic-bert",
+    name: "Xenova/toxic-bert",
+    modelPath: "Xenova/toxic-bert",
+    task: "text-classification",
+    config: {},
+    loadFiles: {},
+    loaded: false,
+  },
 ];

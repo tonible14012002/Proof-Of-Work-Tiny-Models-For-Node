@@ -87,3 +87,7 @@ export type TokenClassificationResult = BaseInferenceResult<
     word: string;
   }[]
 >;
+
+export type TextClassificationResult = BaseInferenceResult<
+  { label: string; score: number }[]
+>;
