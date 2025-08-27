@@ -39,7 +39,7 @@ export const SentimentAnalysisForm = (props: SentimentAnalysisProps) => {
   return (
     <Form {...formInstance}>
       <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <h2 className="font-semibold">Inference</h2>
+        <h3 className="font-semibold text-xs md:text-sm mb-3">Inference</h3>
         <div className="space-y-4">
           <div className="space-y-1">
             <label

@@ -20,6 +20,12 @@ export type ModelDetail = {
     // Custom Task For manual lowerlevel API
     | "none-pipline-supported";
 
+  // Model metadata
+  metadata?: {
+    description: string;
+    huggingfaceUrl: string;
+  };
+
   // Loading information
   loadFiles: Record<string, FileLoadInfo>;
   loadTime?: number;
@@ -86,4 +92,8 @@ export type TokenClassificationResult = BaseInferenceResult<
     index: number;
     word: string;
   }[]
+>;
+
+export type TextClassificationResult = BaseInferenceResult<
+  { label: string; score: number }[]
 >;

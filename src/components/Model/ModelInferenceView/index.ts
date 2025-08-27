@@ -1,2 +1,3 @@
 
-export * from './ModelInferenceView'
+export { ModelInferenceView } from "./ModelInferenceView";
+export { ModelMetadataCard } from "./ModelMetadataCard";
