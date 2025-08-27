@@ -5,6 +5,7 @@ import type { ModelDetail } from "@/schema/model";
 import { useEffect, useState } from "react";
 import { useModels } from "@/provider/ModelsProvider";
 import { AppSidebar } from "@/components/common/AppSidebar";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export const HomePage = () => {
   const { models } = useModels();
@@ -27,12 +28,14 @@ export const HomePage = () => {
           onOpenChange={setIsOpen}
         />
         <div className="h-full min-h-0 min-w-0">
-          {selectedModel && (
+          {selectedModel ? (
             // Force reload component on change
             <ModelInferenceView
               selectedModel={selectedModel}
               key={selectedModel.id}
             />
+          ) : (
+            <EmptyState onOpenSidebar={() => setIsOpen(true)} />
           )}
         </div>
       </div>

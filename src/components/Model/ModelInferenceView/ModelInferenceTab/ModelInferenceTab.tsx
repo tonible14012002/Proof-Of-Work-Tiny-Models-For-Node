@@ -30,6 +30,12 @@ import {
   type TokenClassificationInputParams,
 } from "@/hooks/inference/useInferenceTokenClassification";
 import { TokenClassificationResultPanel } from "./ResultPanel/TokenClassificationResultPanel";
+import { TextClassificationForm } from "./InferenceForm/TextClassificationForm";
+import {
+  useInferenceTextClassification,
+  type TextClassificationInputParams,
+} from "@/hooks/inference/useInferenceTextClassification";
+import { TextClassificationResultPanel } from "./ResultPanel/TextClassificationResultPanel";
 
 interface ModelInferenceTabProps {
   model: ModelDetail;
@@ -52,6 +58,10 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
   );
 
   const { classify: classifyTokens, isPending: isPendingTokenClassify } = useInferenceTokenClassification(
+    model.id
+  );
+
+  const { classify: classifyText, isPending: isPendingTextClassify } = useInferenceTextClassification(
     model.id
   );
 
@@ -118,10 +128,22 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
           setResult(result);
         }
         break;
+      case "text-classification":
+        {
+          setResult(null);
+          const result = await classifyText({
+            text: data.input,
+            options: {
+              top_k: data.topK === "null" ? null : Number(data.topK),
+            },
+          } as TextClassificationInputParams);
+          setResult(result);
+        }
+        break;
     }
   };
 
-  const isPending = isPendingSummarize || isPendingAnalyze || isPendingGenerate || isPendingClassify || isPendingTokenClassify;
+  const isPending = isPendingSummarize || isPendingAnalyze || isPendingGenerate || isPendingClassify || isPendingTokenClassify || isPendingTextClassify;
 
   return (
     <>
@@ -130,7 +152,7 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
         onInferenceSubmit: onInference,
       })}
       <div className="rounded-lg space-y-2 p-4 mt-4 border">
-        <h3 className="font-medium">Inference Result</h3>
+        <h3 className="font-semibold text-xs md:text-sm mb-3">Inference Result</h3>
         {result && result.latency && (
           <div className="">
             <Badge>Latency: {formatReadableDurationInMs(result.latency)}</Badge>
@@ -177,6 +199,9 @@ const getInferenceForm = ({
     case "token-classification":
       Form = TokenClassificationForm;
       break;
+    case "text-classification":
+      Form = TextClassificationForm;
+      break;
   }
 
   if (!Form) {
@@ -212,6 +237,9 @@ const getInferenceResultPanel = ({
       break;
     case "token-classification":
       PanelComp = TokenClassificationResultPanel;
+      break;
+    case "text-classification":
+      PanelComp = TextClassificationResultPanel;
       break;
   }
 

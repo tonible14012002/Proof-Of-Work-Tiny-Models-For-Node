@@ -46,7 +46,7 @@ export const ZeroShotClassificationForm = (
   return (
     <Form {...formInstance}>
       <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <h2 className="font-semibold">Zero-Shot Classification</h2>
+        <h3 className="font-semibold text-xs md:text-sm mb-3">Zero-Shot Classification</h3>
         <div className="space-y-4">
           <div className="space-y-1">
             <label
