@@ -19,8 +19,10 @@ export const ExamplePromptsList = ({ currentTask }: ExamplePromptsListProps) => 
       setCopiedIndex({ task, index });
       toast.success("Prompt copied to clipboard");
       setTimeout(() => setCopiedIndex(null), 2000);
-    } catch (err) {
-      toast.error("Failed to copy prompt");
+    } catch (err: any) {
+      toast.error("Failed to copy prompt", {
+        description: err?.message
+      });
     }
   };
 
