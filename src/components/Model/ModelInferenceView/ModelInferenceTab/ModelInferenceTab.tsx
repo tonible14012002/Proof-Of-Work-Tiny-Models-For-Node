@@ -241,7 +241,7 @@ const getInferenceForm = ({
     return null;
   }
 
-  return <Form onInferenceSubmit={onInferenceSubmit} modelId={model.id} />;
+  return <Form onInferenceSubmit={onInferenceSubmit} modelId={model.id} disabled={!model.loadTime || model.loadTime <= 0} />;
 };
 
 type GetInferenceResultPanelParams = {

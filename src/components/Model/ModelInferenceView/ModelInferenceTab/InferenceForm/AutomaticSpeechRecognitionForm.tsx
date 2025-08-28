@@ -9,9 +9,11 @@ import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover
 import { useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { AudioRecorderDialog } from "@/components/common/AudioRecorderDialog";
+import { MicIcon } from "lucide-react";
 
 interface AutomaticSpeechRecognitionProps {
   modelId: string;
+  disabled?: boolean;
   onInferenceSubmit?: (data: any) => void;
 }
 
@@ -28,7 +30,7 @@ const schema = z
 export const AutomaticSpeechRecognitionForm = (
   props: AutomaticSpeechRecognitionProps
 ) => {
-  const { onInferenceSubmit } = props;
+  const { onInferenceSubmit, disabled } = props;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("file");
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -141,29 +143,32 @@ export const AutomaticSpeechRecognitionForm = (
               </div>
             </TabsContent>
           </Tabs>
-          <Button
-            className="w-full"
-            variant="default"
-            type="submit"
-            ref={btnRef}
-          >
-            Transcribe Audio
-          </Button>
-          <AudioRecorderDialog
-            onRecordFinish={(audioBlob) => {
-              formInstance.setValue(
-                "audioFile",
-                new File([audioBlob], "recording.wav")
-              );
-              formInstance.setValue("inputType", "file");
-              btnRef.current?.click();
-            }}
-            trigger={
-              <Button className="w-full" variant="destructive" type="button">
-                Record Speech
-              </Button>
-            }
-          />
+          <div className="flex flex-col gap-3 md:flex-row">
+            <Button
+              variant="default"
+              type="submit"
+              ref={btnRef}
+              disabled={disabled}
+            >
+              Transcribe Audio
+            </Button>
+            <AudioRecorderDialog
+              onRecordFinish={(audioBlob) => {
+                formInstance.setValue(
+                  "audioFile",
+                  new File([audioBlob], "recording.wav")
+                );
+                formInstance.setValue("inputType", "file");
+                btnRef.current?.click();
+              }}
+              trigger={
+                <Button variant="destructive" type="button" disabled={disabled}>
+                  <MicIcon />
+                  Record Speech
+                </Button>
+              }
+            />
+          </div>
         </div>
       </form>
     </Form>

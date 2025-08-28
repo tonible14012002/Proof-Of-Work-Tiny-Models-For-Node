@@ -9,6 +9,7 @@ import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover
 
 interface Text2TextGenerationFormProps {
   modelId: string;
+  disabled?: boolean;
   onInferenceSubmit?: (_: any) => void;
 }
 
@@ -26,7 +27,7 @@ const schema = z.object({
 export const Text2TextGenerationForm = (
   props: Text2TextGenerationFormProps
 ) => {
-  const { onInferenceSubmit } = props;
+  const { onInferenceSubmit, disabled } = props;
   const formInstance = useForm({
     defaultValues: {
       input: "",
@@ -74,7 +75,7 @@ export const Text2TextGenerationForm = (
             </label>
             <FormInput name="max_new_tokens" type="number" min={1} />
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={disabled}>
             Generate
           </Button>
         </div>

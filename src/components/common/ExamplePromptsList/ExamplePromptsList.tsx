@@ -21,6 +21,8 @@ export const ExamplePromptsList = ({
     index: number;
   } | null>(null);
 
+  const [task, setTask] = useState<string>(currentTask || "summarization");
+
   const handleCopy = async (text: string, task: string, index: number) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -45,7 +47,7 @@ export const ExamplePromptsList = ({
 
   return (
     <div className="w-full">
-      <Tabs defaultValue={currentTask || "summarization"} className="w-full">
+      <Tabs defaultValue={task} className="w-full" onValueChange={setTask}>
         <ScrollArea className="overflow-x-auto">
           <TabsList className="max-w-full">
             {Object.entries(taskLabels).map(([task, label]) => (
@@ -61,7 +63,7 @@ export const ExamplePromptsList = ({
           <TabsContent key={task} value={task} className="mt-2">
             {/* [data-radix-scroll-area-viewport] */}
             <ScrollArea className="h-[300px] w-full rounded-md [&_[data-radix-scroll-area-viewport]>div]:!block">
-              <div className="space-y-3 shadow-md">
+              <div className="space-y-3">
                 {prompts.map((prompt, index) => (
                   <div
                     onClick={() => onSelectPrompt?.(prompt)}
@@ -73,7 +75,14 @@ export const ExamplePromptsList = ({
                       wordBreak: "break-word",
                     }}
                   >
-                    <p className="text-muted-foreground text-sm flex-1 leading-relaxed break-words">
+                    <p
+                      className={cn(
+                        "text-sm flex-1 leading-relaxed break-words",
+                        {
+                          truncate: task === "automatic-speech-recognition",
+                        }
+                      )}
+                    >
                       {prompt}
                     </p>
                     <Button

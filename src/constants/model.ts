@@ -98,11 +98,8 @@ export const EXAMPLE_PROMPTS: Record<TaskWithExamples, string[]> = {
     "This is the worst decision ever made by this incompetent management team."
   ],
   "automatic-speech-recognition": [
-    "https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav",
-    "https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav",
-    "https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav",
-    "https://huggingface.co/datasets/Narsil/asr_dummy/resolve/main/mlk.flac",
-    "https://huggingface.co/datasets/Narsil/asr_dummy/resolve/main/1272-141231-0002.mp3"
+    "https://storage.googleapis.com/kagglesdsdata/datasets/829978/1417968/harvard.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=databundle-worker-v2%40kaggle-161607.iam.gserviceaccount.com%2F20250828%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20250828T062131Z&X-Goog-Expires=345600&X-Goog-SignedHeaders=host&X-Goog-Signature=9f9d2835bba62390677c7a87c6253a02601237c04693d95d612df8a31250b40ce25199b91f954995f06e83d5bdf7e8c39947a24b7ab119d781d2a7aac1ac6f3b522fbcf7697b09b95a2acd0da929aca7bf3cd8b8638564eeca4fbcd0c6d55cfacefc1fa0664d71d92e0ed929aa1a5fa1130e83461985aac3179e00eaaf1e8be824c2ebb02b680db14ea6b85993a0f75109e780ae565d6fbb0d24a6dfd236c7c97bc9f83812398ca386cd6bd465e333a78a82a6c52127d732a5239538ae400edeb344c31ac47d5bef5903c5ee05f1a258d038820422c71a0c8da7487a166bd3eb2c84898dfcd71d05328cfeda74841d6d14708377bfb8df5326ce83e2698e1824",
+    
   ],
   // "text2text-generation": [
   //   "Translate this text to French: Hello, how are you today?",

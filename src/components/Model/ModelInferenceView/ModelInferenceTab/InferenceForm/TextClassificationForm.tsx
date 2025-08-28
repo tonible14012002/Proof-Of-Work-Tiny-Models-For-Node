@@ -9,6 +9,7 @@ import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover
 
 interface TextClassificationFormProps {
   modelId: string;
+  disabled?: boolean;
   onInferenceSubmit?: (_: any) => void;
 }
 
@@ -24,7 +25,7 @@ const schema = z.object({
 });
 
 export const TextClassificationForm = (props: TextClassificationFormProps) => {
-  const { onInferenceSubmit } = props;
+  const { onInferenceSubmit, disabled } = props;
   const formInstance = useForm({
     defaultValues: {
       input: "",
@@ -45,8 +46,13 @@ export const TextClassificationForm = (props: TextClassificationFormProps) => {
     <Form {...formInstance}>
       <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-xs md:text-sm">Text Classification</h3>
-          <ExamplePromptsPopover currentTask="text-classification" onSelectPrompt={handlePromptSelect} />
+          <h3 className="font-semibold text-xs md:text-sm">
+            Text Classification
+          </h3>
+          <ExamplePromptsPopover
+            currentTask="text-classification"
+            onSelectPrompt={handlePromptSelect}
+          />
         </div>
         <div className="space-y-4">
           <div className="space-y-1">
@@ -81,9 +87,11 @@ export const TextClassificationForm = (props: TextClassificationFormProps) => {
               Number of top predictions to return (null for all)
             </p>
           </div>
-          <Button type="submit" className="w-full">
-            Classify
-          </Button>
+          <div className="flex flex-col">
+            <Button type="submit" disabled={disabled}>
+              Classify
+            </Button>
+          </div>
         </div>
       </form>
     </Form>
