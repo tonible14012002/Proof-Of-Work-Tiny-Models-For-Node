@@ -278,7 +278,7 @@ export const ModelInferenceView = ({
             />
           </div>
           <TabsContent value={MODES.INFERENCE}>
-            <ModelInferenceTab model={selectedModel} />
+            <ModelInferenceTab model={model} />
           </TabsContent>
         </div>
       </Tabs>
