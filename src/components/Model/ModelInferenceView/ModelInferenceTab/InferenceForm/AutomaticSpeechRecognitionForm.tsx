@@ -8,6 +8,7 @@ import z from "zod";
 import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
 import { useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
+import { AudioRecorderDialog } from "@/components/common/AudioRecorderDialog";
 
 interface AutomaticSpeechRecognitionProps {
   modelId: string;
@@ -30,6 +31,7 @@ export const AutomaticSpeechRecognitionForm = (
   const { onInferenceSubmit } = props;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("file");
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const formInstance = useForm({
     defaultValues: {
@@ -139,9 +141,29 @@ export const AutomaticSpeechRecognitionForm = (
               </div>
             </TabsContent>
           </Tabs>
-          <Button className="w-full" variant="default" type="submit">
+          <Button
+            className="w-full"
+            variant="default"
+            type="submit"
+            ref={btnRef}
+          >
             Transcribe Audio
           </Button>
+          <AudioRecorderDialog
+            onRecordFinish={(audioBlob) => {
+              formInstance.setValue(
+                "audioFile",
+                new File([audioBlob], "recording.wav")
+              );
+              formInstance.setValue("inputType", "file");
+              btnRef.current?.click();
+            }}
+            trigger={
+              <Button className="w-full" variant="destructive" type="button">
+                Record Speech
+              </Button>
+            }
+          />
         </div>
       </form>
     </Form>
