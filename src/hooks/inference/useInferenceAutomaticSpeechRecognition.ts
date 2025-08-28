@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useModels } from "@/provider/ModelsProvider";
 
 export type AutomaticSpeechRecognitionInputParams = {
-  text: string | string[];
+  text: string;
   inputType?: "url" | "file";
 };
 
@@ -51,10 +51,6 @@ export const useInferenceAutomaticSpeechRecognition = (modelId?: string) => {
     if (waiterPromiseRef.current) {
       return;
     }
-    if (input.inputType !== "url") {
-      toast("Currently, only Audio URL is supported");
-      return
-    }
     try {
       setIsPending(true);
       const newInferenceId = uuidv4();
@@ -71,16 +67,17 @@ export const useInferenceAutomaticSpeechRecognition = (modelId?: string) => {
       await initWaiter();
       // NOTE: The WebWorker not support AudioContext API.
       // For this Task, the worker script only for loading the Model into cache
-
       const autoSpeechRecognizer = await pipeline(
         "automatic-speech-recognition",
         modelDetail.modelPath,
         {}
       );
+
       let latency = 0
       const now = performance.now();
       const modelResult = await autoSpeechRecognizer(input.text, {});
       latency = performance.now() - now;
+
       setIsPending(false);
       return {
         latency,

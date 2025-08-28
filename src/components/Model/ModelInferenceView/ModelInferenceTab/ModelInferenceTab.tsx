@@ -59,21 +59,17 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
     model.id
   );
 
-  const { classify, isPending: isPendingClassify } = useInferenceZeroShotClassification(
-    model.id
-  );
+  const { classify, isPending: isPendingClassify } =
+    useInferenceZeroShotClassification(model.id);
 
-  const { classify: classifyTokens, isPending: isPendingTokenClassify } = useInferenceTokenClassification(
-    model.id
-  );
+  const { classify: classifyTokens, isPending: isPendingTokenClassify } =
+    useInferenceTokenClassification(model.id);
 
-  const { classify: classifyText, isPending: isPendingTextClassify } = useInferenceTextClassification(
-    model.id
-  );
+  const { classify: classifyText, isPending: isPendingTextClassify } =
+    useInferenceTextClassification(model.id);
 
-  const { transcribe, isPending: isPendingTranscribe } = useInferenceAutomaticSpeechRecognition(
-    model.id
-  );
+  const { transcribe, isPending: isPendingTranscribe } =
+    useInferenceAutomaticSpeechRecognition(model.id);
 
   const [result, setResult] = useState<any>(null);
 
@@ -123,7 +119,7 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
           const result = await classify({
             text: data.text,
             labels: data.labels,
-            template: data.template
+            template: data.template,
           } as ZeroShotClassificationInputParams);
           setResult(result);
         }
@@ -153,17 +149,29 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
       case "automatic-speech-recognition":
         {
           setResult(null);
+          const url =
+            data.inputType === "url"
+              ? data.audioUrl
+              : URL.createObjectURL(data.audioFile);
           const result = await transcribe({
-            text: data.audioUrl || "",
-            inputType: data.inputType
+            text: url,
+            inputType: data.inputType,
           } as AutomaticSpeechRecognitionInputParams);
+          URL.revokeObjectURL(url)
           setResult(result);
         }
         break;
     }
   };
 
-  const isPending = isPendingSummarize || isPendingAnalyze || isPendingGenerate || isPendingClassify || isPendingTokenClassify || isPendingTextClassify || isPendingTranscribe;
+  const isPending =
+    isPendingSummarize ||
+    isPendingAnalyze ||
+    isPendingGenerate ||
+    isPendingClassify ||
+    isPendingTokenClassify ||
+    isPendingTextClassify ||
+    isPendingTranscribe;
 
   return (
     <>
@@ -172,7 +180,9 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
         onInferenceSubmit: onInference,
       })}
       <div className="rounded-lg space-y-2 p-4 mt-4 border">
-        <h3 className="font-semibold text-xs md:text-sm mb-3">Inference Result</h3>
+        <h3 className="font-semibold text-xs md:text-sm mb-3">
+          Inference Result
+        </h3>
         {result && result.latency && (
           <div className="">
             <Badge>Latency: {formatReadableDurationInMs(result.latency)}</Badge>
@@ -230,7 +240,7 @@ const getInferenceForm = ({
   if (!Form) {
     return null;
   }
-  
+
   return <Form onInferenceSubmit={onInferenceSubmit} modelId={model.id} />;
 };
 
