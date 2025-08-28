@@ -59,7 +59,8 @@ export const ExamplePromptsList = ({
 
         {Object.entries(EXAMPLE_PROMPTS).map(([task, prompts]) => (
           <TabsContent key={task} value={task} className="mt-2">
-            <ScrollArea className="h-[300px] w-full rounded-md">
+            {/* [data-radix-scroll-area-viewport] */}
+            <ScrollArea className="h-[300px] w-full rounded-md [&_[data-radix-scroll-area-viewport]>div]:!block">
               <div className="space-y-3 shadow-md">
                 {prompts.map((prompt, index) => (
                   <div
@@ -68,8 +69,13 @@ export const ExamplePromptsList = ({
                     className={cn(
                       "flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/50 cursor-pointer active:scale-98 transition-all"
                     )}
+                    style={{
+                      wordBreak: "break-word",
+                    }}
                   >
-                    <p className="text-sm flex-1 leading-relaxed">{prompt}</p>
+                    <p className="text-muted-foreground text-sm flex-1 leading-relaxed break-words">
+                      {prompt}
+                    </p>
                     <Button
                       variant="ghost"
                       size="sm"
