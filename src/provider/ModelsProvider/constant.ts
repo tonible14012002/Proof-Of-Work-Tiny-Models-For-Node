@@ -109,7 +109,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     loadFiles: {},
     loaded: false,
   },
-    {
+  {
     id: "Xenova/toxic-bert",
     name: "Xenova/toxic-bert",
     modelPath: "Xenova/toxic-bert",
@@ -118,6 +118,66 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     metadata: {
       description: "BERT model fine-tuned for toxic comment classification. Can identify various types of toxic content including hate speech, threats, and insults. This model is essential for content moderation, online community management, and any platform that needs to automatically detect and filter harmful content to maintain safe user environments.",
       huggingfaceUrl: "https://huggingface.co/Xenova/toxic-bert",
+    },
+    loadFiles: {},
+    loaded: false,
+  },
+  {
+    id: "Xenova/whisper-tiny",
+    name: "Xenova/whisper-tiny",
+    modelPath: "Xenova/whisper-tiny",
+    task: "automatic-speech-recognition",
+    config: {
+      device: "auto",
+    },
+    metadata: {
+      description: "Lightweight ONNX-compatible version of OpenAI's Whisper-tiny model optimized for web-based speech transcription. This tiny variant provides quick and efficient automatic speech recognition for multilingual audio, making it perfect for browser-based applications requiring fast speech-to-text conversion without sacrificing too much accuracy.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/whisper-tiny",
+    },
+    loadFiles: {},
+    loaded: false,
+  },
+  {
+    id: "Xenova/whisper-small",
+    name: "Xenova/whisper-small",
+    modelPath: "Xenova/whisper-small",
+    task: "automatic-speech-recognition",
+    config: {
+      device: "auto",
+    },
+    metadata: {
+      description: "ONNX-compatible version of OpenAI's whisper-small model designed for web-based speech transcription. Offers better accuracy than the tiny variant while still maintaining good performance for browser environments. Supports multilingual speech recognition and can transcribe audio directly from URLs, making it ideal for JavaScript applications requiring reliable speech-to-text functionality.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/whisper-small",
+    },
+    loadFiles: {},
+    loaded: false,
+  },
+  {
+    id: "Xenova/whisper-tiny.en",
+    name: "Xenova/whisper-tiny.en",
+    modelPath: "Xenova/whisper-tiny.en",
+    task: "automatic-speech-recognition",
+    config: {
+      device: "auto",
+    },
+    metadata: {
+      description: "English-specific version of OpenAI's Whisper-tiny model optimized for web compatibility using ONNX weights. This lightweight model is specifically trained for English speech recognition and supports flexible transcription options including basic text, timestamps, and word-level timestamp generation. Perfect for English-only applications requiring fast and efficient speech transcription.",
+      huggingfaceUrl: "https://huggingface.co/Xenova/whisper-tiny.en",
+    },
+    loadFiles: {},
+    loaded: false,
+  },
+  {
+    id: "onnx-community/whisper-base",
+    name: "onnx-community/whisper-base",
+    modelPath: "onnx-community/whisper-base",
+    task: "automatic-speech-recognition",
+    config: {
+      device: "auto",
+    },
+    metadata: {
+      description: "ONNX-converted version of OpenAI's Whisper-base model designed for web environments using Transformers.js. This base variant offers improved accuracy over smaller models while remaining suitable for web deployment. Supports multilingual automatic speech recognition and is optimized for real-time speech transcription in browser-based applications.",
+      huggingfaceUrl: "https://huggingface.co/onnx-community/whisper-base",
     },
     loadFiles: {},
     loaded: false,
