@@ -153,17 +153,11 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
       case "automatic-speech-recognition":
         {
           setResult(null);
-
-          console.log(data)
-
           const result = await transcribe({
-            text: data.input || "",
-            options: {
-              language: "en", // Default to English, can be made configurable
-              return_timestamps: false, // Can be made configurable
-            },
+            text: data.audioUrl || "",
+            inputType: data.inputType
           } as AutomaticSpeechRecognitionInputParams);
-          // setResult(result);
+          setResult(result);
         }
         break;
     }

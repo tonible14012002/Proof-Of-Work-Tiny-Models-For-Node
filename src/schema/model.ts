@@ -101,4 +101,4 @@ export type TextClassificationResult = BaseInferenceResult<
 
 export type AutomaticSpeechRecognitionResult = BaseInferenceResult<{
   text: string;
-}[]>;
+}>;

@@ -27,6 +27,11 @@ export const ExamplePromptsPopover = ({
     setIsOpen(open);
   };
 
+  const onMobileSelectPrompt = (pmpt: string) => {
+    setIsOpen(false)
+    onSelectPrompt?.(pmpt)
+  }
+
   if (!isMobile) {
     return (
       <Popover>
@@ -65,7 +70,7 @@ export const ExamplePromptsPopover = ({
           </p>
           <ExamplePromptsList
             currentTask={currentTask}
-            onSelectPrompt={onSelectPrompt}
+            onSelectPrompt={onMobileSelectPrompt}
           />
         </div>
       </DrawerContent>

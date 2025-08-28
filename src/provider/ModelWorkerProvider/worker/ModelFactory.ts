@@ -22,12 +22,12 @@ export class ModelFactory {
     task: ModelDetail["task"],
     modelPath: string,
     onLoad: OnLoadModel,
-    modelConfig?: ModelDetail["config"],
+    modelConfig?: ModelDetail["config"]
   ) {
     if (this.modelMap.has(modelId)) {
       return this.modelMap.get(modelId);
     }
-    console.log(modelConfig)
+    console.log(modelConfig);
     if (task === "none-pipline-supported") {
       const fetchModel = AutoModelForSequenceClassification.from_pretrained(
         modelPath,
@@ -66,7 +66,7 @@ export class ModelFactory {
     modelId: string,
     task: ModelDetail["task"],
     input: string | string[],
-    params: any,
+    params: any
   ) {
     const model = this.modelMap.get(modelId);
 
@@ -91,29 +91,45 @@ export class ModelFactory {
       case "zero-shot-classification": {
         const typedModel = model as ZeroShotClassificationPipeline;
         // , params?.labels, params?.options
-        const result = await typedModel(input as string | string[], params.labels, params.options);
+        const result = await typedModel(
+          input as string | string[],
+          params.labels,
+          params.options
+        );
         return result;
       }
       case "text-classification": {
         const typedModel = model as TextClassificationPipeline;
-        const result = await typedModel(input as string | string[], params?.options);
+        const result = await typedModel(
+          input as string | string[],
+          params?.options
+        );
         return result;
       }
       case "summarization": {
         const summarizer = model as SummarizationPipeline;
-        const result = await summarizer(input as string | string[], params?.options);
+        const result = await summarizer(
+          input as string | string[],
+          params?.options
+        );
         return result;
       }
 
       case "text2text-generation": {
         const generator = model as Text2TextGenerationPipeline;
-        const result = await generator(input as string | string[], params?.options);
+        const result = await generator(
+          input as string | string[],
+          params?.options
+        );
         return result;
       }
 
       case "sentiment-analysis": {
         const typedModel = model as TextClassificationPipeline;
-        const result = await typedModel(input as string | string[], params?.options);
+        const result = await typedModel(
+          input as string | string[],
+          params?.options
+        );
         return result;
       }
       case "token-classification": {
@@ -123,7 +139,7 @@ export class ModelFactory {
       }
       case "automatic-speech-recognition": {
         // TODO: Implement pipeline call
-        return {};
+        return "Done";
       }
     }
   }

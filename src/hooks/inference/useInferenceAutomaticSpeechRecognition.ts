@@ -1,22 +1,30 @@
 import { MODEL_WORKER_EVENT } from "@/constants/event";
 import { useWorkerContext } from "@/provider/ModelWorkerProvider";
-import type { AutomaticSpeechRecognitionResult, WorkerMessage } from "@/schema/model";
-import { useCallback, useEffect, useRef, useState } from "react";
+import type {
+  AutomaticSpeechRecognitionResult,
+  WorkerMessage,
+} from "@/schema/model";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { pipeline } from "@huggingface/transformers";
 import { v4 as uuidv4 } from "uuid";
+import { useModels } from "@/provider/ModelsProvider";
 
 export type AutomaticSpeechRecognitionInputParams = {
   text: string | string[];
-  options?: {
-    language?: string;
-    return_timestamps?: boolean;
-  };
+  inputType?: "url" | "file";
 };
 
 type ASRResolver = (_: AutomaticSpeechRecognitionResult) => void;
 
 export const useInferenceAutomaticSpeechRecognition = (modelId?: string) => {
   const { worker, runModel } = useWorkerContext();
+  const { models } = useModels();
+
+  const modelDetail = useMemo(() => {
+    return models.find((model) => model.id === modelId);
+  }, [modelId, models]);
+
   const [isPending, setIsPending] = useState(false);
   const [inferenceId, setInferenceId] = useState("");
   const waiterPromiseRef = useRef<{
@@ -36,32 +44,48 @@ export const useInferenceAutomaticSpeechRecognition = (modelId?: string) => {
     waiterPromiseRef.current = null;
   };
 
-
   const transcribe = async (input: AutomaticSpeechRecognitionInputParams) => {
-    if (!modelId) {
+    if (!modelId || !modelDetail) {
       return;
     }
     if (waiterPromiseRef.current) {
       return;
     }
+    if (input.inputType !== "url") {
+      toast("Currently, only Audio URL is supported");
+      return
+    }
     try {
       setIsPending(true);
       const newInferenceId = uuidv4();
       setInferenceId(newInferenceId);
-      
+
       // TODO: Implement pipeline call
       await runModel(
         modelId,
         "automatic-speech-recognition",
         input.text,
-        {
-          options: input.options,
-        },
+        {},
         newInferenceId
       );
-      const result = await initWaiter();
+      await initWaiter();
+      // NOTE: The WebWorker not support AudioContext API.
+      // For this Task, the worker script only for loading the Model into cache
+
+      const autoSpeechRecognizer = await pipeline(
+        "automatic-speech-recognition",
+        modelDetail.modelPath,
+        {}
+      );
+      let latency = 0
+      const now = performance.now();
+      const modelResult = await autoSpeechRecognizer(input.text, {});
+      latency = performance.now() - now;
       setIsPending(false);
-      return result;
+      return {
+        latency,
+        data: modelResult 
+      } as AutomaticSpeechRecognitionResult;
     } catch (e: any) {
       console.error(e);
       toast("Error occurred while transcribing audio", {

@@ -12,6 +12,7 @@ export const AutomaticSpeechRecognitionResultPanel = (
 ) => {
   const { result, isPending } = props;
 
+  console.log(result);
   return (
     <div className="mt-4 rounded-lg overflow-hidden">
       {isPending && (
@@ -25,17 +26,11 @@ export const AutomaticSpeechRecognitionResultPanel = (
           }
         )}
       >
-        {result &&
-          result.data.map((item, index) => (
-            <div key={index} className="space-y-2">
-              <p className="font-medium text-foreground">Transcription:</p>
-              <p className="text-muted-foreground leading-relaxed">{item.text}</p>
-            </div>
-          ))}
         {result && (
-          <div className="mt-3 pt-3 border-t border-border">
-            <p className="text-xs text-muted-foreground">
-              Processing time: {result.latency}ms
+          <div className="space-y-2">
+            <p className="font-medium">Transcription:</p>
+            <p className="text-muted-foreground leading-relaxed">
+              {result.data.text}
             </p>
           </div>
         )}
