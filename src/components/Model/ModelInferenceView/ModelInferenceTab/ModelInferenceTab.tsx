@@ -36,6 +36,12 @@ import {
   type TextClassificationInputParams,
 } from "@/hooks/inference/useInferenceTextClassification";
 import { TextClassificationResultPanel } from "./ResultPanel/TextClassificationResultPanel";
+import { AutomaticSpeechRecognitionForm } from "./InferenceForm/AutomaticSpeechRecognitionForm";
+import {
+  useInferenceAutomaticSpeechRecognition,
+  type AutomaticSpeechRecognitionInputParams,
+} from "@/hooks/inference/useInferenceAutomaticSpeechRecognition";
+import { AutomaticSpeechRecognitionResultPanel } from "./ResultPanel/AutomaticSpeechRecognitionResultPanel";
 
 interface ModelInferenceTabProps {
   model: ModelDetail;
@@ -62,6 +68,10 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
   );
 
   const { classify: classifyText, isPending: isPendingTextClassify } = useInferenceTextClassification(
+    model.id
+  );
+
+  const { transcribe, isPending: isPendingTranscribe } = useInferenceAutomaticSpeechRecognition(
     model.id
   );
 
@@ -140,10 +150,23 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
           setResult(result);
         }
         break;
+      case "automatic-speech-recognition":
+        {
+          setResult(null);
+          const result = await transcribe({
+            text: data.input || "",
+            options: {
+              language: "en", // Default to English, can be made configurable
+              return_timestamps: false, // Can be made configurable
+            },
+          } as AutomaticSpeechRecognitionInputParams);
+          setResult(result);
+        }
+        break;
     }
   };
 
-  const isPending = isPendingSummarize || isPendingAnalyze || isPendingGenerate || isPendingClassify || isPendingTokenClassify || isPendingTextClassify;
+  const isPending = isPendingSummarize || isPendingAnalyze || isPendingGenerate || isPendingClassify || isPendingTokenClassify || isPendingTextClassify || isPendingTranscribe;
 
   return (
     <>
@@ -202,11 +225,15 @@ const getInferenceForm = ({
     case "text-classification":
       Form = TextClassificationForm;
       break;
+    case "automatic-speech-recognition":
+      Form = AutomaticSpeechRecognitionForm;
+      break;
   }
 
   if (!Form) {
     return null;
   }
+  
   return <Form onInferenceSubmit={onInferenceSubmit} modelId={model.id} />;
 };
 
@@ -240,6 +267,9 @@ const getInferenceResultPanel = ({
       break;
     case "text-classification":
       PanelComp = TextClassificationResultPanel;
+      break;
+    case "automatic-speech-recognition":
+      PanelComp = AutomaticSpeechRecognitionResultPanel;
       break;
   }
 

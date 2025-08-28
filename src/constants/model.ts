@@ -21,6 +21,7 @@ export type TaskWithExamples = Extract<ModelDetail["task"],
   | "zero-shot-classification"
   | "token-classification"
   | "text-classification"
+  | "automatic-speech-recognition"
   // | "text2text-generation"
 >;
 
@@ -95,6 +96,13 @@ export const EXAMPLE_PROMPTS: Record<TaskWithExamples, string[]> = {
     "I'm so frustrated with this terrible experience and poor service quality.",
     "The financial outlook appears stable with moderate growth projections for Q4.",
     "This is the worst decision ever made by this incompetent management team."
+  ],
+  "automatic-speech-recognition": [
+    "https://www2.cs.uic.edu/~i101/SoundFiles/BabyElephantWalk60.wav",
+    "https://www2.cs.uic.edu/~i101/SoundFiles/PinkPanther30.wav",
+    "https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav",
+    "https://huggingface.co/datasets/Narsil/asr_dummy/resolve/main/mlk.flac",
+    "https://huggingface.co/datasets/Narsil/asr_dummy/resolve/main/1272-141231-0002.mp3"
   ],
   // "text2text-generation": [
   //   "Translate this text to French: Hello, how are you today?",

@@ -1,5 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Lightbulb } from "lucide-react";
 import { ExamplePromptsList } from "../ExamplePromptsList";
@@ -9,9 +13,13 @@ import { useState } from "react";
 
 interface ExamplePromptsPopoverProps {
   currentTask?: TaskWithExamples;
+  onSelectPrompt?: (prompt: string) => void;
 }
 
-export const ExamplePromptsPopover = ({ currentTask }: ExamplePromptsPopoverProps) => {
+export const ExamplePromptsPopover = ({
+  currentTask,
+  onSelectPrompt,
+}: ExamplePromptsPopoverProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -32,9 +40,9 @@ export const ExamplePromptsPopover = ({ currentTask }: ExamplePromptsPopoverProp
           <div className="space-y-2">
             <h4 className="font-medium text-sm">Example Prompts</h4>
             <p className="text-xs text-muted-foreground">
-              Click on any example to copy it to your clipboard
+              Click on any example to paste it into the form
             </p>
-            <ExamplePromptsList currentTask={currentTask} />
+            <ExamplePromptsList currentTask={currentTask} onSelectPrompt={onSelectPrompt} />
           </div>
         </PopoverContent>
       </Popover>
@@ -53,9 +61,12 @@ export const ExamplePromptsPopover = ({ currentTask }: ExamplePromptsPopoverProp
         <div className="p-4 space-y-2">
           <h4 className="font-medium text-sm">Example Prompts</h4>
           <p className="text-xs text-muted-foreground">
-            Click on any example to copy it to your clipboard
+            Click on any example to paste it into the form
           </p>
-          <ExamplePromptsList currentTask={currentTask} />
+          <ExamplePromptsList
+            currentTask={currentTask}
+            onSelectPrompt={onSelectPrompt}
+          />
         </div>
       </DrawerContent>
     </Drawer>

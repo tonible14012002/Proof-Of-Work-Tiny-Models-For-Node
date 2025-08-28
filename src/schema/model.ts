@@ -17,6 +17,7 @@ export type ModelDetail = {
     | "text2text-generation" // for text2text-generation pipeline
     | "sentiment-analysis"
     | "token-classification"
+    | "automatic-speech-recognition"
     // Custom Task For manual lowerlevel API
     | "none-pipline-supported";
 
@@ -97,3 +98,7 @@ export type TokenClassificationResult = BaseInferenceResult<
 export type TextClassificationResult = BaseInferenceResult<
   { label: string; score: number }[]
 >;
+
+export type AutomaticSpeechRecognitionResult = BaseInferenceResult<{
+  text: string;
+}[]>;

@@ -91,35 +91,39 @@ export class ModelFactory {
       case "zero-shot-classification": {
         const typedModel = model as ZeroShotClassificationPipeline;
         // , params?.labels, params?.options
-        const result = await typedModel(input, params.labels, params.options);
+        const result = await typedModel(input as string | string[], params.labels, params.options);
         return result;
       }
       case "text-classification": {
         const typedModel = model as TextClassificationPipeline;
-        const result = await typedModel(input, params?.options);
+        const result = await typedModel(input as string | string[], params?.options);
         return result;
       }
       case "summarization": {
         const summarizer = model as SummarizationPipeline;
-        const result = await summarizer(input, params?.options);
+        const result = await summarizer(input as string | string[], params?.options);
         return result;
       }
 
       case "text2text-generation": {
         const generator = model as Text2TextGenerationPipeline;
-        const result = await generator(input, params?.options);
+        const result = await generator(input as string | string[], params?.options);
         return result;
       }
 
       case "sentiment-analysis": {
         const typedModel = model as TextClassificationPipeline;
-        const result = await typedModel(input, params?.options);
+        const result = await typedModel(input as string | string[], params?.options);
         return result;
       }
       case "token-classification": {
         const typedModel = model as TokenClassificationPipeline;
-        const result = await typedModel(input);
+        const result = await typedModel(input as string | string[]);
         return result;
+      }
+      case "automatic-speech-recognition": {
+        // TODO: Implement pipeline call
+        return {};
       }
     }
   }

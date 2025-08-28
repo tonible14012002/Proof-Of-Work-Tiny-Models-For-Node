@@ -5,13 +5,21 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Copy, Check } from "lucide-react";
 import { EXAMPLE_PROMPTS, type TaskWithExamples } from "@/constants/model";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface ExamplePromptsListProps {
   currentTask?: TaskWithExamples;
+  onSelectPrompt?: (prompt: string) => void;
 }
 
-export const ExamplePromptsList = ({ currentTask }: ExamplePromptsListProps) => {
-  const [copiedIndex, setCopiedIndex] = useState<{ task: string; index: number } | null>(null);
+export const ExamplePromptsList = ({
+  currentTask,
+  onSelectPrompt,
+}: ExamplePromptsListProps) => {
+  const [copiedIndex, setCopiedIndex] = useState<{
+    task: string;
+    index: number;
+  } | null>(null);
 
   const handleCopy = async (text: string, task: string, index: number) => {
     try {
@@ -21,17 +29,18 @@ export const ExamplePromptsList = ({ currentTask }: ExamplePromptsListProps) => 
       setTimeout(() => setCopiedIndex(null), 2000);
     } catch (err: any) {
       toast.error("Failed to copy prompt", {
-        description: err?.message
+        description: err?.message,
       });
     }
   };
 
   const taskLabels: Record<TaskWithExamples, string> = {
-    "summarization": "Summarization",
+    summarization: "Summarization",
     "sentiment-analysis": "Sentiment Analysis",
     "zero-shot-classification": "Zero-Shot Classification",
     "token-classification": "Token Classification",
-    "text-classification": "Text Classification"
+    "text-classification": "Text Classification",
+    "automatic-speech-recognition": "Speech Recognition",
   };
 
   return (
@@ -54,8 +63,11 @@ export const ExamplePromptsList = ({ currentTask }: ExamplePromptsListProps) => 
               <div className="space-y-3 shadow-md">
                 {prompts.map((prompt, index) => (
                   <div
+                    onClick={() => onSelectPrompt?.(prompt)}
                     key={index}
-                    className="flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors"
+                    className={cn(
+                      "flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/50 cursor-pointer active:scale-98 transition-all"
+                    )}
                   >
                     <p className="text-sm flex-1 leading-relaxed">{prompt}</p>
                     <Button
@@ -64,7 +76,8 @@ export const ExamplePromptsList = ({ currentTask }: ExamplePromptsListProps) => 
                       onClick={() => handleCopy(prompt, task, index)}
                       className="flex-shrink-0 h-8 w-8 p-0"
                     >
-                      {copiedIndex?.task === task && copiedIndex?.index === index ? (
+                      {copiedIndex?.task === task &&
+                      copiedIndex?.index === index ? (
                         <Check className="h-4 w-4 text-green-600" />
                       ) : (
                         <Copy className="h-4 w-4" />

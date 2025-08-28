@@ -43,12 +43,16 @@ export const TokenClassificationForm = (
     });
   });
 
+  const handlePromptSelect = (prompt: string) => {
+    formInstance.setValue("input", prompt);
+  };
+
   return (
     <Form {...formInstance}>
       <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-xs md:text-sm">Token Classification</h3>
-          <ExamplePromptsPopover currentTask="token-classification" />
+          <ExamplePromptsPopover currentTask="token-classification" onSelectPrompt={handlePromptSelect} />
         </div>
         <div className="space-y-4">
           <div className="space-y-1">
