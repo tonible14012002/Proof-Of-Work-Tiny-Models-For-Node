@@ -14,7 +14,7 @@ import { ModelAddPopup } from "@/components/Model/ModelAddPopup";
 interface AppSidebarProps {
   models: ModelDetail[];
   selectedModelId?: string;
-  onSelectModel: (_: ModelDetail) => void;
+  onSelectModel: (_: string) => void;
   className?: string;
   open?: boolean;
   onOpenChange?: (_: boolean) => void;
@@ -24,8 +24,8 @@ export const AppSidebar = memo((props: AppSidebarProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
-  const onSelectModel = (model: ModelDetail) => {
-    props.onSelectModel(model);
+  const onSelectModel = (modelId: string) => {
+    props.onSelectModel(modelId);
     props.onOpenChange?.(false);
     setIsOpen(false);
   };

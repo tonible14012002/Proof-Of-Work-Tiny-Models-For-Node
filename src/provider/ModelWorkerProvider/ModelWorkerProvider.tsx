@@ -1,13 +1,18 @@
 import { MODEL_WORKER_EVENT } from "@/constants/event";
 import type { PropsWithChildren, RefObject } from "react";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { createContext } from "@/lib/utils";
 import { makeMessage } from "@/utils/worker";
-import type { ModelDetail, ModelInferenceInput } from "@/schema/model";
+import type {
+  ModelDetail,
+  ModelInferenceInput,
+  WorkerMessage,
+} from "@/schema/model";
 
 interface ModelWorkerContextValues {
   loadModel: (model: ModelDetail) => Promise<void>;
   worker: RefObject<Worker | null>;
+  isWorkerReady: boolean;
   runModel: (
     modelId: string,
     task: ModelDetail["task"],
@@ -24,6 +29,7 @@ export { useWorkerContext };
 
 export const ModelWorkerProvider = memo(({ children }: PropsWithChildren) => {
   const workerRef = useRef<Worker | null>(null);
+  const [isWorkerReady, setIsWorkerReady] = useState(false);
 
   const onLoadModel = async (model: ModelDetail) => {
     if (!workerRef.current) return;
@@ -73,11 +79,20 @@ export const ModelWorkerProvider = memo(({ children }: PropsWithChildren) => {
         type: "module",
       }
     );
+
+    workerRef.current.addEventListener("message", (event) => {
+      const data = event.data as WorkerMessage;
+      if (data.type === MODEL_WORKER_EVENT.WORKER.worker_ready) {
+        console.log("Worker is ready");
+        setIsWorkerReady(true);
+      }
+    });
   }, []);
 
   return (
     <Provider
       value={{
+        isWorkerReady,
         loadModel: onLoadModel,
         worker: workerRef,
         runModel,

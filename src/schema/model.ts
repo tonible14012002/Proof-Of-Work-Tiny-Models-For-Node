@@ -1,13 +1,22 @@
 import type { ModelMainEvent, ModelWorkerEvent } from "@/constants/event";
 import { type PretrainedModelOptions } from "@huggingface/transformers";
 
-import type { DType } from "@/constants/model";
+export type DType = 
+| "auto"
+| "bnb4"
+| "fp16"
+| "fp32"
+| "int8"
+| "q4"
+| "q4f16"
+| "q8"
+| "uint8"
 
 export type ModelDetail = {
   id: string;
   name: string;
   modelPath: string;
-  config?: Omit<PretrainedModelOptions, "progress_callback">;
+  config?: Omit<PretrainedModelOptions, "progress_callback" | "dtype">;
   dtype?: DType;
   task:
     | "text-classification"

@@ -48,6 +48,7 @@ import {
   type TextGenerationInputParams,
 } from "@/hooks/inference/useInferenceTextGeneration";
 import { TextGenerationResultPanel } from "./ResultPanel/TextGenerationResultPanel";
+import { useModels } from "@/provider/ModelsProvider";
 
 interface ModelInferenceTabProps {
   model: ModelDetail;
@@ -55,160 +56,133 @@ interface ModelInferenceTabProps {
 
 export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
   const { model } = props;
-  const { summarize, isPending: isPendingSummarize } = useInferenceSummarizer(
+  const { isInfering, setIsInfering } = useModels();
+  const { summarize } = useInferenceSummarizer(model.id);
+  const { analyze } = useInferenceSentimentAnalysis(model.id);
+
+  const { generate } = useInferenceText2Text(model.id);
+
+  const { classify } = useInferenceZeroShotClassification(model.id);
+
+  const { classify: classifyTokens } = useInferenceTokenClassification(
     model.id
   );
-  const { analyze, isPending: isPendingAnalyze } =
-    useInferenceSentimentAnalysis(model.id);
 
-  const { generate, isPending: isPendingGenerate } = useInferenceText2Text(
-    model.id
-  );
+  const { classify: classifyText } = useInferenceTextClassification(model.id);
 
-  const { classify, isPending: isPendingClassify } =
-    useInferenceZeroShotClassification(model.id);
+  const { transcribe } = useInferenceAutomaticSpeechRecognition(model.id);
 
-  const { classify: classifyTokens, isPending: isPendingTokenClassify } =
-    useInferenceTokenClassification(model.id);
-
-  const { classify: classifyText, isPending: isPendingTextClassify } =
-    useInferenceTextClassification(model.id);
-
-  const { transcribe, isPending: isPendingTranscribe } =
-    useInferenceAutomaticSpeechRecognition(model.id);
-
-  const { generate: generateText, isPending: isPendingTextGeneration } =
-    useInferenceTextGeneration(model.id);
+  const { generate: generateText } = useInferenceTextGeneration(model.id);
 
   const [result, setResult] = useState<any>(null);
 
   const onInference = async (data: any) => {
-    switch (model.task) {
-      case "summarization":
-        {
-          setResult(null);
-          const result = await summarize({
-            text: data.input,
-          } as SummarizerInputParams);
+    setIsInfering(true);
+    try {
+      switch (model.task) {
+        case "summarization":
+          {
+            setResult(null);
+            const result = await summarize({
+              text: data.input,
+            } as SummarizerInputParams);
 
-          setResult(result);
-        }
-        break;
+            setResult(result);
+          }
+          break;
 
-      case "sentiment-analysis":
-        {
-          setResult(null);
-          const result = await analyze({
-            text: data.input,
-            options: {
-              top_k: data.topK === "null" ? null : Number(data.topK),
-            },
-          } as SentimentAnalysisInputParams);
-          setResult(result);
-        }
-        break;
-      case "text2text-generation":
-        {
-          setResult(null);
-          const result = await generate({
-            text: data.input,
-            options:
-              data.max_new_tokens && !isNaN(Number(data.max_new_tokens))
-                ? {
-                    max_new_tokens: Number(data.max_new_tokens),
-                  }
-                : undefined,
-          });
-          setResult(result);
-        }
-        break;
-      case "zero-shot-classification":
-        {
-          setResult(null);
-          const result = await classify({
-            text: data.text,
-            labels: data.labels,
-            template: data.template,
-          } as ZeroShotClassificationInputParams);
-          setResult(result);
-        }
-        break;
-      case "token-classification":
-        {
-          setResult(null);
-          const result = await classifyTokens({
-            text: data.text,
-            options: data.options,
-          } as TokenClassificationInputParams);
-          setResult(result);
-        }
-        break;
-      case "text-classification":
-        {
-          setResult(null);
-          const result = await classifyText({
-            text: data.input,
-            options: {
-              top_k: data.topK === "null" ? null : Number(data.topK),
-            },
-          } as TextClassificationInputParams);
-          setResult(result);
-        }
-        break;
-      case "automatic-speech-recognition":
-        {
-          setResult(null);
-          const url =
-            data.inputType === "url"
-              ? data.audioUrl
-              : URL.createObjectURL(data.audioFile);
-          const result = await transcribe({
-            text: url,
-            inputType: data.inputType,
-          } as AutomaticSpeechRecognitionInputParams);
-          URL.revokeObjectURL(url)
-          setResult(result);
-        }
-        break;
-      case "text-generation":
-        {
-          setResult(null);
-          const options: any = {};
-          if (data.max_new_tokens && !isNaN(Number(data.max_new_tokens))) {
-            options.max_new_tokens = Number(data.max_new_tokens);
+        case "sentiment-analysis":
+          {
+            setResult(null);
+            const result = await analyze({
+              text: data.input,
+              options: {
+                top_k: data.topK === "null" ? null : Number(data.topK),
+              },
+            } as SentimentAnalysisInputParams);
+            setResult(result);
           }
-          if (data.temperature && !isNaN(Number(data.temperature))) {
-            options.temperature = Number(data.temperature);
+          break;
+        case "text2text-generation":
+          {
+            setResult(null);
+            const result = await generate({
+              text: data.input,
+              options:
+                data.max_new_tokens && !isNaN(Number(data.max_new_tokens))
+                  ? {
+                      max_new_tokens: Number(data.max_new_tokens),
+                    }
+                  : undefined,
+            });
+            setResult(result);
           }
-          if (data.top_p && !isNaN(Number(data.top_p))) {
-            options.top_p = Number(data.top_p);
+          break;
+        case "zero-shot-classification":
+          {
+            setResult(null);
+            const result = await classify({
+              text: data.text,
+              labels: data.labels,
+              template: data.template,
+            } as ZeroShotClassificationInputParams);
+            setResult(result);
           }
-          if (typeof data.do_sample === "boolean") {
-            options.do_sample = data.do_sample;
-          } else if (data.do_sample === "true") {
-            options.do_sample = true;
-          } else if (data.do_sample === "false") {
-            options.do_sample = false;
+          break;
+        case "token-classification":
+          {
+            setResult(null);
+            const result = await classifyTokens({
+              text: data.text,
+              options: data.options,
+            } as TokenClassificationInputParams);
+            setResult(result);
           }
-          const result = await generateText({
-            messages: data.messages,
-            options: Object.keys(options).length > 0 ? options : undefined,
-          } as TextGenerationInputParams);
-          setResult(result);
-        }
-        break;
+          break;
+        case "text-classification":
+          {
+            setResult(null);
+            const result = await classifyText({
+              text: data.input,
+              options: {
+                top_k: data.topK === "null" ? null : Number(data.topK),
+              },
+            } as TextClassificationInputParams);
+            setResult(result);
+          }
+          break;
+        case "automatic-speech-recognition":
+          {
+            setResult(null);
+            const url =
+              data.inputType === "url"
+                ? data.audioUrl
+                : URL.createObjectURL(data.audioFile);
+            const result = await transcribe({
+              text: url,
+              inputType: data.inputType,
+            } as AutomaticSpeechRecognitionInputParams);
+            URL.revokeObjectURL(url);
+            setResult(result);
+          }
+          break;
+        case "text-generation":
+          {
+            setResult(null);
+            const result = await generateText({
+              messages: data.messages,
+              options: data.options,
+            } as TextGenerationInputParams);
+            setResult(result);
+          }
+          break;
+      }
+      setIsInfering(false);
+    } catch (e) {
+      console.log(e);
+      setIsInfering(false);
     }
   };
-
-  const isPending =
-    isPendingSummarize ||
-    isPendingAnalyze ||
-    isPendingGenerate ||
-    isPendingClassify ||
-    isPendingTokenClassify ||
-    isPendingTextClassify ||
-    isPendingTranscribe ||
-    isPendingTextGeneration;
 
   return (
     <>
@@ -225,14 +199,14 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
             <Badge>Latency: {formatReadableDurationInMs(result.latency)}</Badge>
           </div>
         )}
-        {isPending && (
+        {isInfering && (
           <div className="">
             <Skeleton className="h-[22px] w-[40px]" />
           </div>
         )}
         {getInferenceResultPanel({
           model,
-          isPending,
+          isPending: isInfering,
           result,
         })}
       </div>
@@ -281,12 +255,18 @@ const getInferenceForm = ({
     return null;
   }
 
-  return <Form onInferenceSubmit={onInferenceSubmit} modelId={model.id} disabled={!model.loadTime || model.loadTime <= 0} />;
+  return (
+    <Form
+      onInferenceSubmit={onInferenceSubmit}
+      modelId={model.id}
+      disabled={!model.loadTime || model.loadTime <= 0}
+    />
+  );
 };
 
 type GetInferenceResultPanelParams = {
   model: ModelDetail;
-  isPending: boolean;
+  isPending?: boolean;
   result: any;
 };
 
