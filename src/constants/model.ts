@@ -12,6 +12,29 @@ export const DTYPE_OPTIONS = [
 
 export type DType = (typeof DTYPE_OPTIONS)[number]["value"];
 
+// Model-specific dtype recommendations based on performance research
+export const MODEL_RECOMMENDED_DTYPES: Record<string, DType> = {
+  // Whisper models - encoder sensitive to quantization, fp16 recommended
+  "Xenova/whisper-tiny": "fp16",
+  "Xenova/whisper-small": "fp16", 
+  "Xenova/whisper-tiny.en": "fp16",
+  "onnx-community/whisper-base": "fp16",
+  
+  // BERT-based models - good performance with q8 quantization
+  "Xenova/distilbert-base-uncased-finetuned-sst-2-english": "q8",
+  "Xenova/distilbert-base-uncased-mnli": "q8",
+  "Xenova/bert-base-multilingual-cased-ner-hrl": "q8",
+  "Xenova/bert-base-multilingual-uncased-sentiment": "q8",
+  
+  // BART summarization models - benefit from q4 quantization for memory efficiency
+  "Xenova/bart-large-cnn": "q4",
+  "Xenova/distilbart-cnn-6-6": "q8", // Smaller model, less aggressive quantization
+  
+  // Text generation models - q4 for memory efficiency
+  "onnx-community/Qwen2.5-0.5B": "q4",
+  "onnx-community/Qwen2.5-0.5B-Instruct": "q4",
+};
+
 import type { ModelDetail } from "@/schema/model";
 
 // Only include task types that have example prompts
@@ -22,7 +45,8 @@ export type TaskWithExamples = Extract<ModelDetail["task"],
   | "token-classification"
   | "text-classification"
   | "automatic-speech-recognition"
-  // | "text2text-generation"
+  | "text2text-generation"
+  | "text-generation"
 >;
 
 export const EXAMPLE_PROMPTS: Record<TaskWithExamples, string[]> = {
@@ -101,13 +125,25 @@ export const EXAMPLE_PROMPTS: Record<TaskWithExamples, string[]> = {
     "https://storage.googleapis.com/kagglesdsdata/datasets/829978/1417968/harvard.wav?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=databundle-worker-v2%40kaggle-161607.iam.gserviceaccount.com%2F20250828%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20250828T062131Z&X-Goog-Expires=345600&X-Goog-SignedHeaders=host&X-Goog-Signature=9f9d2835bba62390677c7a87c6253a02601237c04693d95d612df8a31250b40ce25199b91f954995f06e83d5bdf7e8c39947a24b7ab119d781d2a7aac1ac6f3b522fbcf7697b09b95a2acd0da929aca7bf3cd8b8638564eeca4fbcd0c6d55cfacefc1fa0664d71d92e0ed929aa1a5fa1130e83461985aac3179e00eaaf1e8be824c2ebb02b680db14ea6b85993a0f75109e780ae565d6fbb0d24a6dfd236c7c97bc9f83812398ca386cd6bd465e333a78a82a6c52127d732a5239538ae400edeb344c31ac47d5bef5903c5ee05f1a258d038820422c71a0c8da7487a166bd3eb2c84898dfcd71d05328cfeda74841d6d14708377bfb8df5326ce83e2698e1824",
     
   ],
-  // "text2text-generation": [
-  //   "Translate this text to French: Hello, how are you today?",
-  //   "Summarize the following article: Artificial intelligence has transformed many industries...",
-  //   "Generate a creative story about a robot learning to paint.",
-  //   "Answer this question: What is the capital of Japan?",
-  //   "Rewrite this sentence in a more formal tone: Hey, can you help me with this?"
-  // ]
+  "text2text-generation": [
+    "Translate this text to French: Hello, how are you today?",
+    "Summarize the following article: Artificial intelligence has transformed many industries...",
+    "Generate a creative story about a robot learning to paint.",
+    "Answer this question: What is the capital of Japan?",
+    "Rewrite this sentence in a more formal tone: Hey, can you help me with this?"
+  ],
+  "text-generation": [
+    "Write a short story about a time traveler who discovers that changing the past has unexpected consequences.",
+    "Explain the concept of artificial intelligence to a 10-year-old child in simple terms.",
+    "Create a professional email response to a customer complaint about a delayed shipment.",
+    "Write a persuasive argument for why renewable energy is important for our future.",
+    "Describe a typical day in the life of a software developer working remotely.",
+    "Generate creative names for a new coffee shop that specializes in sustainable practices.",
+    "Write a poem about the beauty of autumn leaves and changing seasons.",
+    "Explain how to prepare a simple pasta dish with step-by-step instructions.",
+    "Create a motivational speech for students preparing for final exams.",
+    "Write a product description for a new smart fitness tracker with health monitoring features."
+  ]
 };
 
 

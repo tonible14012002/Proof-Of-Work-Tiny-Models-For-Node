@@ -1,13 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { FileLoadInfo, ModelDetail, WorkerMessage } from "@/schema/model";
+import type { FileLoadInfo, WorkerMessage } from "@/schema/model";
 import { DownloadIcon, LoaderIcon, TrashIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { ModelInferenceTab } from "./ModelInferenceTab";
 import { useWorkerContext } from "@/provider/ModelWorkerProvider";
 import { toast } from "sonner";
 import { MODEL_WORKER_EVENT } from "@/constants/event";
-import { DTYPE_OPTIONS, type DType } from "@/constants/model";
+import {
+  DTYPE_OPTIONS,
+  MODEL_RECOMMENDED_DTYPES,
+  type DType,
+} from "@/constants/model";
 import { useModels } from "@/provider/ModelsProvider";
 import { cn } from "@/lib/utils";
 import { ModelInfoCard } from "./ModelInfoCard";
@@ -28,7 +32,7 @@ import {
 } from "@/components/ui/select";
 
 interface ModelInferenceViewProps {
-  selectedModel: ModelDetail;
+  selectedModelId: string;
 }
 
 const MODES = {
@@ -37,24 +41,56 @@ const MODES = {
 };
 type ModeType = (typeof MODES)[keyof typeof MODES];
 
-export const ModelInferenceView = ({
-  selectedModel,
+export const ModelInferenceView = memo(({
+  selectedModelId,
 }: ModelInferenceViewProps) => {
+  const { models, setModelLoading, setModels } = useModels();
+  const { worker, loadModel } = useWorkerContext();
   const [mode, setMode] = useState<ModeType>(MODES.INFERENCE);
 
-  const [model, setModel] = useState(selectedModel);
-  const { worker, loadModel } = useWorkerContext();
-  const [isLoadingModel, setIsLoadingModel] = useState(false);
-  const { mutateList, models } = useModels();
+  const selectedModel = useMemo(
+    () => models.find((m) => m.id === selectedModelId),
+    [models, selectedModelId]
+  );
+
+  // Get recommended dtype for this model
+  const recommendedDtype = selectedModel
+    ? MODEL_RECOMMENDED_DTYPES[selectedModel.modelPath]
+    : "auto";
+
+  const [model, setModel] = useState(() => {
+    if (!selectedModel) return null;
+    return {
+      ...selectedModel,
+      dtype: selectedModel.dtype || recommendedDtype || "auto",
+    };
+  });
+
+  const isLoadingModel = selectedModel?.loading || false;
 
   const isSaved = useMemo(() => {
+    if (!model) return true;
+    // Define which attr should be trigger mutate to list
+
     const modelFromList = models.find((m) => m.id === model.id);
-    return JSON.stringify(modelFromList) === JSON.stringify(model);
+    const totalFromList = getTotalFileInfo(model.loadFiles || {});
+    const totalFromCurrent = getTotalFileInfo(modelFromList?.loadFiles || {});
+
+    return (
+      JSON.stringify({
+        size: totalFromCurrent.totalSize,
+        loaded: model.loaded,
+      }) ===
+      JSON.stringify({
+        size: totalFromList.totalSize,
+        loaded: modelFromList?.loaded,
+      })
+    );
   }, [model, models]);
 
   const onLoadModelBtn = () => {
     if (!model) return;
-    setIsLoadingModel(true);
+    setModelLoading(model.id, true);
     loadModel(model);
   };
 
@@ -66,7 +102,7 @@ export const ModelInferenceView = ({
   const onLoadModelProgress = useCallback(
     (event: MessageEvent) => {
       const data = event.data as WorkerMessage;
-      if (data.modelId !== model.id) return;
+      if (!model || data.modelId !== model.id) return;
 
       if (
         [
@@ -87,19 +123,22 @@ export const ModelInferenceView = ({
           {} as Record<string, FileLoadInfo>
         );
 
-        setModel((prev) => ({
-          ...prev,
-          loadFiles: loadFilesStatus,
-          loadTime:
-            Math.round((timeTrack.modelLoadTime?.duration ?? 0) * 100) / 100 ||
-            0,
-        }));
+        setModel((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            loadFiles: loadFilesStatus,
+            loadTime:
+              Math.round((timeTrack.modelLoadTime?.duration ?? 0) * 100) /
+                100 || 0,
+          };
+        });
       }
 
       if (data.type === MODEL_WORKER_EVENT.WORKER.ready) {
-        setIsLoadingModel(false);
         const timeTrack = data.data?.timeTrack ?? {};
         setModel((prev) => {
+          if (!prev) return prev;
           return {
             ...prev,
             loaded: true,
@@ -111,12 +150,11 @@ export const ModelInferenceView = ({
       }
 
       if (data.type === MODEL_WORKER_EVENT.WORKER.error) {
-        setIsLoadingModel(false);
         const error = data.data?.error ?? "Unknown error";
         toast.error(`Model ${model.id} error: ${error}`);
       }
     },
-    [model.id]
+    [model]
   );
 
   useEffect(() => {
@@ -131,10 +169,24 @@ export const ModelInferenceView = ({
   }, [onLoadModelProgress, worker]);
 
   useEffect(() => {
-    if (!isSaved) {
-      mutateList(model.id, model);
+    if (!isSaved && model) {
+      setModels((prevModels) =>
+        prevModels.map((m) =>
+          m.id === model.id
+            ? {
+                ...model,
+                loading: m.loading,
+              }
+            : m
+        )
+      );
+      // Loading should be controlled global
     }
-  }, [isSaved, model, mutateList]);
+  }, [isSaved, model, setModels]);
+
+  if (!selectedModel || !model) {
+    return <div>Model not found</div>;
+  }
 
   const infos = getTotalFileInfo(model.loadFiles || {});
 
@@ -163,10 +215,13 @@ export const ModelInferenceView = ({
                 disabled={isLoadingModel || Boolean(model.loaded)}
                 value={model.dtype || "auto"}
                 onValueChange={(value) => {
-                  setModel((prev) => ({
-                    ...prev,
-                    dtype: value as DType,
-                  }));
+                  setModel((prev) => {
+                    if (!prev) return prev;
+                    return {
+                      ...prev,
+                      dtype: value as DType,
+                    };
+                  });
                 }}
               >
                 <SelectTrigger className="w-24 h-8">
@@ -176,29 +231,34 @@ export const ModelInferenceView = ({
                   {DTYPE_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
+                      {recommendedDtype === option.value && (
+                        <span className="text-xs text-muted-foreground ml-1">
+                          (recommended)
+                        </span>
+                      )}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="flex items-center gap-2">
-            <Button
-              onClick={onLoadModelBtn}
-              size="sm"
-              disabled={Boolean(model.loaded) || isLoadingModel}
-            >
-              {isLoadingModel && (
-                <LoaderIcon size={12} className="animate-spin" />
-              )}
-              Load Model
-            </Button>
-            <Button size="sm" variant="outline" onClick={handleExport}>
-              <DownloadIcon />
-              Export
-            </Button>
-            <Button size="sm" className="w-8 h-8" variant="destructive">
-              <TrashIcon />
-            </Button>
+              <Button
+                onClick={onLoadModelBtn}
+                size="sm"
+                disabled={Boolean(model.loaded) || isLoadingModel}
+              >
+                {isLoadingModel && (
+                  <LoaderIcon size={12} className="animate-spin" />
+                )}
+                Load Model
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleExport}>
+                <DownloadIcon />
+                Export
+              </Button>
+              <Button size="sm" className="w-8 h-8" variant="destructive">
+                <TrashIcon />
+              </Button>
             </div>
           </div>
         </div>
@@ -207,7 +267,7 @@ export const ModelInferenceView = ({
           <div className="w-full mb-6">
             <ModelMetadataCard model={model} />
           </div>
-          
+
           {/* Model Information Cards */}
           <div className="w-full grid lg:grid-cols-2 gap-4 mb-4">
             <ModelInfoCard
@@ -284,4 +344,4 @@ export const ModelInferenceView = ({
       </Tabs>
     </div>
   );
-};
+});

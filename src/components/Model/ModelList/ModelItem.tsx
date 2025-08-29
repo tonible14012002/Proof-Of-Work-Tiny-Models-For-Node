@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { type ModelDetail } from "@/schema/model";
 import { DownloadIcon, TimerIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -8,17 +8,18 @@ import {
   formatReadableFileSize,
 } from "@/utils/format";
 import { cn } from "@/lib/utils";
-// import { Badge } from "@/components/ui/badge";
-// import { formatReadableFileSize } from "@/utils/format";
+import { Progress } from "@/components/ui/progress";
 
 type ModelItemProps = {
+  isSelected?: boolean
   modelDetail: ModelDetail;
   onSelect: (model: ModelDetail) => void;
 };
 
-export const ModelItem: React.FC<ModelItemProps> = ({
+export const ModelItem: React.FC<ModelItemProps> = memo(({
   modelDetail,
   onSelect,
+  isSelected
 }) => {
   const fileInfo = getTotalFileInfo(modelDetail.loadFiles || {});
 
@@ -28,10 +29,12 @@ export const ModelItem: React.FC<ModelItemProps> = ({
         "w-full rounded-md p-2 hover:bg-accent transition-colors cursor-pointer border active:bg-accent",
         {
           "bg-accent/70": modelDetail.loadTime,
+          "border-primary": isSelected
         }
       )}
       onClick={() => onSelect(modelDetail)}
     >
+      {modelDetail.loading && <Progress className="h-[2px] -mt-2" indeterminate />}
       <div className="flex gap-4">
         <div className="flex flex-col flex-1 gap-0.5">
           <p className="text-sm font-medium line-clamp-2">{modelDetail.name}</p>
@@ -44,8 +47,8 @@ export const ModelItem: React.FC<ModelItemProps> = ({
           {modelDetail.loadTime ? (
             <div className="progress-group flex flex-col mt-2">
               <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
-                  <TimerIcon size={12} />
-                  Load time: {formatReadableDurationInMs(modelDetail.loadTime)}
+                <TimerIcon size={12} />
+                Load time: {formatReadableDurationInMs(modelDetail.loadTime)}
               </p>
               <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
                 <DownloadIcon size={12} />
@@ -71,4 +74,4 @@ export const ModelItem: React.FC<ModelItemProps> = ({
       </div>
     </div>
   );
-};
+});

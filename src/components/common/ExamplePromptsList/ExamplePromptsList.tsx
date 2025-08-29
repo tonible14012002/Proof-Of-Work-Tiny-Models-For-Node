@@ -43,6 +43,8 @@ export const ExamplePromptsList = ({
     "token-classification": "Token Classification",
     "text-classification": "Text Classification",
     "automatic-speech-recognition": "Speech Recognition",
+    "text2text-generation": "Text2Text Generation",
+    "text-generation": "Text Generation",
   };
 
   return (

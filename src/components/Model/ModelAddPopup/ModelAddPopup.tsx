@@ -11,6 +11,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ReactNode } from "react";
+import { memo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -27,7 +28,7 @@ const schema = z.object({
 
 type FormSchema = z.infer<typeof schema>;
 
-export const ModelAddPopup = (props: ModelAddPopupProps) => {
+export const ModelAddPopup = memo((props: ModelAddPopupProps) => {
   const { trigger } = props;
 
   const formInstance = useForm<FormSchema>({
@@ -85,4 +86,4 @@ export const ModelAddPopup = (props: ModelAddPopupProps) => {
       </Form>
     </Dialog>
   );
-};
+});

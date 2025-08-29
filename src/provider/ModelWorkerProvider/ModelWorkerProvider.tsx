@@ -1,6 +1,6 @@
 import { MODEL_WORKER_EVENT } from "@/constants/event";
 import type { PropsWithChildren, RefObject } from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { createContext } from "@/lib/utils";
 import { makeMessage } from "@/utils/worker";
 import type { ModelDetail, ModelInferenceInput } from "@/schema/model";
@@ -22,13 +22,8 @@ const [Provider, useWorkerContext] = createContext<ModelWorkerContextValues>();
 
 export { useWorkerContext };
 
-export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
+export const ModelWorkerProvider = memo(({ children }: PropsWithChildren) => {
   const workerRef = useRef<Worker | null>(null);
-
-  const handleWorkerEvents = useCallback((_event: MessageEvent) => {
-    if (!workerRef.current) return;
-    //
-  }, []);
 
   const onLoadModel = async (model: ModelDetail) => {
     if (!workerRef.current) return;
@@ -41,7 +36,7 @@ export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
           modelPath: model.modelPath,
           config: {
             dtype: model.dtype || "auto",
-            ...(model.config || {})
+            ...(model.config || {}),
           },
           dtype: model.dtype || "auto",
         },
@@ -78,14 +73,7 @@ export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
         type: "module",
       }
     );
-
-    const workerRefCleaner = workerRef.current;
-    workerRefCleaner.addEventListener("message", handleWorkerEvents);
-
-    return () => {
-      workerRefCleaner.removeEventListener("message", handleWorkerEvents);
-    };
-  }, [handleWorkerEvents]);
+  }, []);
 
   return (
     <Provider
@@ -98,4 +86,4 @@ export const ModelWorkerProvider = ({ children }: PropsWithChildren) => {
       {children}
     </Provider>
   );
-};
+});

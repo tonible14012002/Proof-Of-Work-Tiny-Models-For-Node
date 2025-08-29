@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PanelLeftIcon, Plus } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { ModelDetail } from "@/schema/model";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
@@ -13,13 +13,14 @@ import { ModelAddPopup } from "@/components/Model/ModelAddPopup";
 
 interface AppSidebarProps {
   models: ModelDetail[];
+  selectedModelId?: string;
   onSelectModel: (_: ModelDetail) => void;
   className?: string;
   open?: boolean;
   onOpenChange?: (_: boolean) => void;
 }
 
-export const AppSidebar = (props: AppSidebarProps) => {
+export const AppSidebar = memo((props: AppSidebarProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,6 +45,7 @@ export const AppSidebar = (props: AppSidebarProps) => {
         models={props.models}
         onSelectModel={props.onSelectModel}
         className="transition-all"
+        selectedModelId={props.selectedModelId}
       />
     );
   }
@@ -65,6 +67,7 @@ export const AppSidebar = (props: AppSidebarProps) => {
               <AppSidebarContent
                 models={props.models}
                 onSelectModel={onSelectModel}
+                selectedModelId={props.selectedModelId}
               />
             </DrawerContent>
           </div>
@@ -72,12 +75,13 @@ export const AppSidebar = (props: AppSidebarProps) => {
       </div>
     </>
   );
-};
+});
 
-export const AppSidebarContent = ({
+export const AppSidebarContent = memo(({
   models,
   onSelectModel,
   className = "",
+  selectedModelId,
 }: AppSidebarProps) => {
   return (
     <div className={cn("p-4 border-r flex flex-col min-h-0", className)}>
@@ -97,10 +101,14 @@ export const AppSidebarContent = ({
         <ModelGroup
           title="Transformer.Js"
           listEl={
-            <ModelList modelDetails={models} onSelectModel={onSelectModel} />
+            <ModelList
+              modelDetails={models}
+              onSelectModel={onSelectModel}
+              selectedModelId={selectedModelId}
+            />
           }
         />
       </ScrollArea>
     </div>
   );
-};
+});

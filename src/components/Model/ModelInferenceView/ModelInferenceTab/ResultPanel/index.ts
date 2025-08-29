@@ -1,6 +1,7 @@
 export * from "./SummarizeResultPanel"
 export * from "./SentimentAnalysisResultPanel"
 export * from "./Text2TextResultPanel"
+export * from "./TextGenerationResultPanel"
 export * from "./ZeroShotClassificationResultPanel"
 export * from "./TokenClassificationResultPanel"
 export * from "./TextClassificationResultPanel"

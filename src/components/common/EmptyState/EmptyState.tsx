@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { PanelLeftIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface EmptyStateProps {
   className?: string;
   onOpenSidebar?: () => void;
 }
 
-export const EmptyState = ({ className, onOpenSidebar }: EmptyStateProps) => {
+export const EmptyState = memo(({ className, onOpenSidebar }: EmptyStateProps) => {
   return (
     <div className={cn("h-full flex items-center justify-center p-4", className)}>
       <div className="flex flex-col items-center text-center max-w-md">
@@ -31,4 +32,4 @@ export const EmptyState = ({ className, onOpenSidebar }: EmptyStateProps) => {
       </div>
     </div>
   );
-};
+});

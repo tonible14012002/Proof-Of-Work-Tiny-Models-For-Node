@@ -42,6 +42,12 @@ import {
   type AutomaticSpeechRecognitionInputParams,
 } from "@/hooks/inference/useInferenceAutomaticSpeechRecognition";
 import { AutomaticSpeechRecognitionResultPanel } from "./ResultPanel/AutomaticSpeechRecognitionResultPanel";
+import { TextGenerationForm } from "./InferenceForm/TextGenerationForm";
+import {
+  useInferenceTextGeneration,
+  type TextGenerationInputParams,
+} from "@/hooks/inference/useInferenceTextGeneration";
+import { TextGenerationResultPanel } from "./ResultPanel/TextGenerationResultPanel";
 
 interface ModelInferenceTabProps {
   model: ModelDetail;
@@ -70,6 +76,9 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
 
   const { transcribe, isPending: isPendingTranscribe } =
     useInferenceAutomaticSpeechRecognition(model.id);
+
+  const { generate: generateText, isPending: isPendingTextGeneration } =
+    useInferenceTextGeneration(model.id);
 
   const [result, setResult] = useState<any>(null);
 
@@ -161,6 +170,33 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
           setResult(result);
         }
         break;
+      case "text-generation":
+        {
+          setResult(null);
+          const options: any = {};
+          if (data.max_new_tokens && !isNaN(Number(data.max_new_tokens))) {
+            options.max_new_tokens = Number(data.max_new_tokens);
+          }
+          if (data.temperature && !isNaN(Number(data.temperature))) {
+            options.temperature = Number(data.temperature);
+          }
+          if (data.top_p && !isNaN(Number(data.top_p))) {
+            options.top_p = Number(data.top_p);
+          }
+          if (typeof data.do_sample === "boolean") {
+            options.do_sample = data.do_sample;
+          } else if (data.do_sample === "true") {
+            options.do_sample = true;
+          } else if (data.do_sample === "false") {
+            options.do_sample = false;
+          }
+          const result = await generateText({
+            messages: data.messages,
+            options: Object.keys(options).length > 0 ? options : undefined,
+          } as TextGenerationInputParams);
+          setResult(result);
+        }
+        break;
     }
   };
 
@@ -171,7 +207,8 @@ export const ModelInferenceTab = (props: ModelInferenceTabProps) => {
     isPendingClassify ||
     isPendingTokenClassify ||
     isPendingTextClassify ||
-    isPendingTranscribe;
+    isPendingTranscribe ||
+    isPendingTextGeneration;
 
   return (
     <>
@@ -235,6 +272,9 @@ const getInferenceForm = ({
     case "automatic-speech-recognition":
       Form = AutomaticSpeechRecognitionForm;
       break;
+    case "text-generation":
+      Form = TextGenerationForm;
+      break;
   }
 
   if (!Form) {
@@ -277,6 +317,9 @@ const getInferenceResultPanel = ({
       break;
     case "automatic-speech-recognition":
       PanelComp = AutomaticSpeechRecognitionResultPanel;
+      break;
+    case "text-generation":
+      PanelComp = TextGenerationResultPanel;
       break;
   }
 

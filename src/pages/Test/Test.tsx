@@ -15,7 +15,7 @@ import {
   Tensor,
   type ProgressInfo,
 } from "@huggingface/transformers";
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -36,7 +36,7 @@ const schema = z.object({
   input: z.string().min(1, "Input cannot be empty"),
 });
 
-export const TestPage = () => {
+export const TestPage = memo(() => {
   const [classifier, setClassifier] = useState<{
     run: FeatureExtractionPipeline
   }>();
@@ -141,4 +141,4 @@ export const TestPage = () => {
       </form>
     </Form>
   );
-};
+});

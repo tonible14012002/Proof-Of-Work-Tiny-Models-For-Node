@@ -4,6 +4,7 @@ import {
   PreTrainedTokenizer,
   SummarizationPipeline,
   Text2TextGenerationPipeline,
+  TextGenerationPipeline,
   TextClassificationPipeline,
   ZeroShotClassificationPipeline,
   TokenClassificationPipeline,
@@ -24,7 +25,9 @@ export class ModelFactory {
     onLoad: OnLoadModel,
     modelConfig?: ModelDetail["config"]
   ) {
+    // Return existing model if already loaded
     if (this.modelMap.has(modelId)) {
+      console.log(`Model ${modelId} already loaded, returning cached instance`);
       return this.modelMap.get(modelId);
     }
     console.log(modelConfig);
@@ -117,6 +120,15 @@ export class ModelFactory {
 
       case "text2text-generation": {
         const generator = model as Text2TextGenerationPipeline;
+        const result = await generator(
+          input as string | string[],
+          params?.options
+        );
+        return result;
+      }
+
+      case "text-generation": {
+        const generator = model as TextGenerationPipeline;
         const result = await generator(
           input as string | string[],
           params?.options

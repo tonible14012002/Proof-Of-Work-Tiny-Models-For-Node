@@ -15,6 +15,7 @@ export type ModelDetail = {
     | "feature-extraction"
     | "summarization"
     | "text2text-generation" // for text2text-generation pipeline
+    | "text-generation"
     | "sentiment-analysis"
     | "token-classification"
     | "automatic-speech-recognition"
@@ -31,6 +32,7 @@ export type ModelDetail = {
   loadFiles: Record<string, FileLoadInfo>;
   loadTime?: number;
   loaded: boolean;
+  loading?: boolean; // Track if model is currently being loaded
 };
 
 export type FileLoadInfo = {
@@ -102,3 +104,7 @@ export type TextClassificationResult = BaseInferenceResult<
 export type AutomaticSpeechRecognitionResult = BaseInferenceResult<{
   text: string;
 }>;
+
+export type TextGenerationResult = BaseInferenceResult<
+  { generated_text: string }[]
+>;
