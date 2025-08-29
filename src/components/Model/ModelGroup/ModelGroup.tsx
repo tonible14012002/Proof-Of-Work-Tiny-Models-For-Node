@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
+import { memo } from "react";
 
 interface ModelGroupProps {
   title: string;
   listEl?: ReactNode;
 }
 
-export const ModelGroup = (props: ModelGroupProps) => {
+export const ModelGroup = memo((props: ModelGroupProps) => {
   const { title, listEl } = props;
   return (
     <div className="space-y-2">
@@ -13,4 +14,4 @@ export const ModelGroup = (props: ModelGroupProps) => {
       {listEl}
     </div>
   );
-};
+});

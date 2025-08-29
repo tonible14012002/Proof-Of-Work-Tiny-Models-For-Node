@@ -1,18 +1,18 @@
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import type { AutomaticSpeechRecognitionResult } from "@/schema/model";
+import { memo } from "react";
 
 interface AutomaticSpeechRecognitionResultPanelProps {
   result?: AutomaticSpeechRecognitionResult;
   isPending: boolean;
 }
 
-export const AutomaticSpeechRecognitionResultPanel = (
+export const AutomaticSpeechRecognitionResultPanel = memo((
   props: AutomaticSpeechRecognitionResultPanelProps
 ) => {
   const { result, isPending } = props;
 
-  console.log(result);
   return (
     <div className="mt-4 rounded-lg overflow-hidden">
       {isPending && (
@@ -37,4 +37,4 @@ export const AutomaticSpeechRecognitionResultPanel = (
       </div>
     </div>
   );
-};
+});

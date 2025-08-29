@@ -15,6 +15,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/mobilebert-uncased-mnli",
@@ -30,6 +31,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/bart-large-cnn",
@@ -43,6 +45,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/distilbart-cnn-6-6",
@@ -56,6 +59,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/bert-base-multilingual-cased-ner-hrl",
@@ -69,6 +73,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/distilbert-base-uncased-finetuned-sst-2-english",
@@ -82,6 +87,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/bert-base-multilingual-uncased-sentiment",
@@ -95,6 +101,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/finbert",
@@ -108,6 +115,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/toxic-bert",
@@ -121,6 +129,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/whisper-tiny",
@@ -136,6 +145,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/whisper-small",
@@ -151,6 +161,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "Xenova/whisper-tiny.en",
@@ -166,6 +177,7 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
   },
   {
     id: "onnx-community/whisper-base",
@@ -181,5 +193,38 @@ export const DEFAULT_MODELS: ModelDetail[] = [
     },
     loadFiles: {},
     loaded: false,
+    loading: false,
+  },
+  {
+    id: "onnx-community/Qwen2.5-0.5B",
+    name: "onnx-community/Qwen2.5-0.5B",
+    modelPath: "onnx-community/Qwen2.5-0.5B",
+    task: "text-generation",
+    config: {
+      device: "auto",
+    },
+    metadata: {
+      description: "Qwen2.5-0.5B is a small but powerful language model from the Qwen2.5 series with 0.5 billion parameters. Optimized for ONNX and web deployment, it offers efficient text generation capabilities while maintaining good performance for various natural language tasks including completion, conversation, and creative writing.",
+      huggingfaceUrl: "https://huggingface.co/onnx-community/Qwen2.5-0.5B",
+    },
+    loadFiles: {},
+    loaded: false,
+    loading: false,
+  },
+  {
+    id: "onnx-community/Qwen2.5-0.5B-Instruct",
+    name: "onnx-community/Qwen2.5-0.5B-Instruct",
+    modelPath: "onnx-community/Qwen2.5-0.5B-Instruct",
+    task: "text-generation",
+    config: {
+      device: "auto",
+    },
+    metadata: {
+      description: "Qwen2.5-0.5B-Instruct is an instruction-tuned version of Qwen2.5-0.5B optimized for following instructions and engaging in helpful conversations. This model is fine-tuned to be more responsive to user prompts and provides better alignment for chat-based applications, question answering, and instruction-following tasks.",
+      huggingfaceUrl: "https://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct",
+    },
+    loadFiles: {},
+    loaded: false,
+    loading: false,
   },
 ];

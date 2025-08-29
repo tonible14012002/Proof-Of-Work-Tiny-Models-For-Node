@@ -1,38 +1,38 @@
 import { ModelInferenceView } from "@/components/Model/ModelInferenceView";
 
 import { Layout } from "@/components/ui/layout";
-import type { ModelDetail } from "@/schema/model";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useModels } from "@/provider/ModelsProvider";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { EmptyState } from "@/components/common/EmptyState";
 
-export const HomePage = () => {
+export const HomePage = memo(() => {
   const { models } = useModels();
-  const [selectedModel, setSelectedModel] = useState<ModelDetail>();
+  const [selectedModelId, setSelectedModelId] = useState<string>();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (!selectedModel) {
+    if (!selectedModelId) {
       setIsOpen(true);
     }
-  }, [models, selectedModel]);
+  }, [models, selectedModelId]);
 
   return (
-    <Layout container={false} wrapperClassName="h-full">
+    <Layout container={false} wrapperClassName="h-full overflow-hidden">
       <div className="grid md:grid-cols-[340px_1fr] h-full grid-cols-[52px_1fr] transition-all">
         <AppSidebar
+          selectedModelId={selectedModelId}
           models={models}
-          onSelectModel={setSelectedModel}
+          onSelectModel={(model) => setSelectedModelId(model.id)}
           open={isOpen}
           onOpenChange={setIsOpen}
         />
         <div className="h-full min-h-0 min-w-0">
-          {selectedModel ? (
+          {selectedModelId ? (
             // Force reload component on change
             <ModelInferenceView
-              selectedModel={selectedModel}
-              key={selectedModel.id}
+              selectedModelId={selectedModelId}
+              key={selectedModelId}
             />
           ) : (
             <EmptyState onOpenSidebar={() => setIsOpen(true)} />
@@ -41,4 +41,4 @@ export const HomePage = () => {
       </div>
     </Layout>
   );
-};
+});
