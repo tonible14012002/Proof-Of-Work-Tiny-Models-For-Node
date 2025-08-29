@@ -4,7 +4,7 @@ import { ModelItem } from "./ModelItem";
 
 interface ModelListProps {
   modelDetails: ModelDetail[];
-  onSelectModel: (model: ModelDetail) => void;
+  onSelectModel: (modelId: string) => void;
   selectedModelId?: string;
 }
 

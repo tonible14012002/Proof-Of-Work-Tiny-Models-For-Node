@@ -5,17 +5,35 @@ import { memo, useEffect, useState } from "react";
 import { useModels } from "@/provider/ModelsProvider";
 import { AppSidebar } from "@/components/common/AppSidebar";
 import { EmptyState } from "@/components/common/EmptyState";
+import { SwitchModelAlert } from "@/components/common/SwitchModelAlert";
 
 export const HomePage = memo(() => {
-  const { models } = useModels();
+  const { models, isInfering, setIsInfering } = useModels();
   const [selectedModelId, setSelectedModelId] = useState<string>();
   const [isOpen, setIsOpen] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const [willSelectModelId, setWillSelectModelId] = useState(selectedModelId);
+  const onChangeModel = (modelId: string) => {
+    if (!isInfering) {
+      setSelectedModelId(modelId);
+    } else {
+      setShowAlert(true);
+      setWillSelectModelId(modelId);
+    }
+  };
+
+  const onConfirmAlert = () => {
+    setShowAlert(false);
+    setSelectedModelId(willSelectModelId);
+    setIsInfering(false);
+  };
 
   useEffect(() => {
     if (!selectedModelId) {
       setIsOpen(true);
     }
-  }, [models, selectedModelId]);
+  }, [models, selectedModelId, setIsInfering]);
 
   return (
     <Layout container={false} wrapperClassName="h-full overflow-hidden">
@@ -23,7 +41,7 @@ export const HomePage = memo(() => {
         <AppSidebar
           selectedModelId={selectedModelId}
           models={models}
-          onSelectModel={(model) => setSelectedModelId(model.id)}
+          onSelectModel={onChangeModel}
           open={isOpen}
           onOpenChange={setIsOpen}
         />
@@ -39,6 +57,12 @@ export const HomePage = memo(() => {
           )}
         </div>
       </div>
+      <SwitchModelAlert
+        onOpenChange={setShowAlert}
+        open={showAlert}
+        onConfirm={onConfirmAlert}
+        onCancel={() => setShowAlert(false)}
+      />
     </Layout>
   );
 });

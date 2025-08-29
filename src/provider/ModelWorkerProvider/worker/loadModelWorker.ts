@@ -16,5 +16,3 @@ self.postMessage(
     type: MODEL_WORKER_EVENT.WORKER.worker_ready,
   })
 );
-
-
