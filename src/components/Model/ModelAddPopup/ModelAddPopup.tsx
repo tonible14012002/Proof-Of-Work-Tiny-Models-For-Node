@@ -46,7 +46,7 @@ export const ModelAddPopup = memo((props: ModelAddPopupProps) => {
 
   return (
     <Dialog>
-      {trigger && <DialogTrigger>{trigger}</DialogTrigger>}
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <Form {...formInstance}>
         <DialogContent>
           <form onSubmit={onSubmit} className="grid gap-4">
