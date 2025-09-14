@@ -13,9 +13,9 @@ export type DType =
 | "uint8"
 
 export type ModelDetail = {
-  id: string;
-  name: string;
-  modelPath: string;
+  id: string; // app's ID
+  name: string; // Display name
+  modelPath: string; // HuggingFace repo ID
   config?: Omit<PretrainedModelOptions, "progress_callback" | "dtype">;
   dtype?: DType;
   task:
