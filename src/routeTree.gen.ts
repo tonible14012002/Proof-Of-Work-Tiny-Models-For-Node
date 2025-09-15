@@ -15,6 +15,7 @@ import { Route as expired_appLayout_expiredRouteImport } from './routes/(expired
 import { Route as appLayoutRouteImport } from './routes/(app)/_layout'
 import { Route as appLayoutIndexRouteImport } from './routes/(app)/_layout/index'
 import { Route as expired_appLayout_expiredExpiredRouteImport } from './routes/(expired_app)/_layout_expired/expired'
+import { Route as appLayoutModelIdRouteImport } from './routes/(app)/_layout/$modelId'
 
 const expired_appRouteImport = createFileRoute('/(expired_app)')()
 const appRouteImport = createFileRoute('/(app)')()
@@ -47,13 +48,20 @@ const expired_appLayout_expiredExpiredRoute =
     path: '/expired',
     getParentRoute: () => expired_appLayout_expiredRoute,
   } as any)
+const appLayoutModelIdRoute = appLayoutModelIdRouteImport.update({
+  id: '/$modelId',
+  path: '/$modelId',
+  getParentRoute: () => appLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof appLayoutIndexRoute
+  '/$modelId': typeof appLayoutModelIdRoute
   '/expired': typeof expired_appLayout_expiredExpiredRoute
 }
 export interface FileRoutesByTo {
   '/': typeof appLayoutIndexRoute
+  '/$modelId': typeof appLayoutModelIdRoute
   '/expired': typeof expired_appLayout_expiredExpiredRoute
 }
 export interface FileRoutesById {
@@ -62,20 +70,22 @@ export interface FileRoutesById {
   '/(app)/_layout': typeof appLayoutRouteWithChildren
   '/(expired_app)': typeof expired_appRouteWithChildren
   '/(expired_app)/_layout_expired': typeof expired_appLayout_expiredRouteWithChildren
+  '/(app)/_layout/$modelId': typeof appLayoutModelIdRoute
   '/(expired_app)/_layout_expired/expired': typeof expired_appLayout_expiredExpiredRoute
   '/(app)/_layout/': typeof appLayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expired'
+  fullPaths: '/' | '/$modelId' | '/expired'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expired'
+  to: '/' | '/$modelId' | '/expired'
   id:
     | '__root__'
     | '/(app)'
     | '/(app)/_layout'
     | '/(expired_app)'
     | '/(expired_app)/_layout_expired'
+    | '/(app)/_layout/$modelId'
     | '/(expired_app)/_layout_expired/expired'
     | '/(app)/_layout/'
   fileRoutesById: FileRoutesById
@@ -129,14 +139,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof expired_appLayout_expiredExpiredRouteImport
       parentRoute: typeof expired_appLayout_expiredRoute
     }
+    '/(app)/_layout/$modelId': {
+      id: '/(app)/_layout/$modelId'
+      path: '/$modelId'
+      fullPath: '/$modelId'
+      preLoaderRoute: typeof appLayoutModelIdRouteImport
+      parentRoute: typeof appLayoutRoute
+    }
   }
 }
 
 interface appLayoutRouteChildren {
+  appLayoutModelIdRoute: typeof appLayoutModelIdRoute
   appLayoutIndexRoute: typeof appLayoutIndexRoute
 }
 
 const appLayoutRouteChildren: appLayoutRouteChildren = {
+  appLayoutModelIdRoute: appLayoutModelIdRoute,
   appLayoutIndexRoute: appLayoutIndexRoute,
 }
 

@@ -1,6 +1,8 @@
 import type { ModelMainEvent, ModelWorkerEvent } from "@/constants/event";
 import { type PretrainedModelOptions } from "@huggingface/transformers";
 
+export type Category = "Language Processing" | "Vision" | "Audio" | "Multimodal" | "Other";
+
 export type DType = 
 | "auto"
 | "bnb4"
@@ -14,6 +16,7 @@ export type DType =
 
 export type ModelDetail = {
   id: string; // app's ID
+  category: Category; // Model category
   name: string; // Display name
   modelPath: string; // HuggingFace repo ID
   config?: Omit<PretrainedModelOptions, "progress_callback" | "dtype">;
@@ -53,6 +56,9 @@ export type FileLoadInfo = {
   status: "initiate" | "download" | "progress" | "done";
   duration: number;
 };
+
+
+// Model Interfaces
 
 export type InitModelInput = {
   task: ModelDetail["task"];

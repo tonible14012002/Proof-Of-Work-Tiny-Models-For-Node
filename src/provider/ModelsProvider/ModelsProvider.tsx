@@ -13,14 +13,16 @@ import { useWorkerContext } from "../ModelWorkerProvider";
 import { MODEL_WORKER_EVENT } from "@/constants/event";
 import { toast } from "sonner";
 import { loadStatusFromWorkerData } from "@/utils/model";
+import { useParams } from "@tanstack/react-router";
+import type { ModelParams } from "@/constants/routes";
 
 interface ModelContextValues {
-  mutateList: (id: string, data: ModelDetail) => void;
   models: ModelDetail[];
   setModelLoading: (id: string, loading: boolean) => void;
   setModels: Dispatch<React.SetStateAction<ModelDetail[]>>;
   isInfering?: boolean;
   setIsInfering: Dispatch<React.SetStateAction<boolean>>;
+  selectedModel?: ModelDetail;
 }
 
 const [Provider, useModels] = createContext<ModelContextValues>();
@@ -31,6 +33,9 @@ export const ModelsProvider = memo(({ children }: PropsWithChildren) => {
   const [models, setModels] = useState<ModelDetail[]>(DEFAULT_MODELS);
   const { worker, isWorkerReady } = useWorkerContext();
   const [isInfering, setIsInfering] = useState<boolean>(false);
+
+  const { modelId } = useParams({ strict: false }) as ModelParams;
+  const selectedModel = models.find((m) => m.id === modelId);
 
   const onLoadModelProgress = useCallback((event: MessageEvent) => {
     const data = event.data as WorkerMessage;
@@ -58,7 +63,6 @@ export const ModelsProvider = memo(({ children }: PropsWithChildren) => {
     }
 
     if (data.type === MODEL_WORKER_EVENT.WORKER.ready) {
-      // setModelLoading(data.modelId, false);
       const timeTrack = data.data?.timeTrack ?? {};
       console.log({ timeTrack });
       setModels((prev) =>
@@ -99,12 +103,6 @@ export const ModelsProvider = memo(({ children }: PropsWithChildren) => {
     };
   }, [isWorkerReady, onLoadModelProgress, worker]);
 
-  const mutateList = (id: string, data: ModelDetail) => {
-    setModels((prevModels) =>
-      prevModels.map((model) => (model.id === id ? data : model))
-    );
-  };
-
   const setModelLoading = (id: string, loading: boolean) => {
     setModels((prevModels) =>
       prevModels.map((model) =>
@@ -116,12 +114,12 @@ export const ModelsProvider = memo(({ children }: PropsWithChildren) => {
   return (
     <Provider
       value={{
-        mutateList,
         models,
         setModelLoading,
         setModels,
         isInfering,
         setIsInfering,
+        selectedModel
       }}
     >
       {children}

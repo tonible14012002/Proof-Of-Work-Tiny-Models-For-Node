@@ -4,7 +4,7 @@ export const AppHeaderLogo = () => {
   return (
     <div className="flex items-center gap-2">
       <div className="p-1 rounded-lg bg-primary">
-        <Brain className="w-6 h-6 text-white" />
+        <Brain className="w-6 h-6 text-primary-foreground" />
       </div>
       <div className="flex flex-col">
         <h1 className="text-md font-semibold">Choose your brain</h1>

@@ -9,7 +9,7 @@ export const AppProvider = memo(({ children }: PropsWithChildren) => {
       <ModelsProvider>
         {children}
         <Toaster position="top-center" />
-      </ModelsProvider>{" "}
+      </ModelsProvider>
     </ModelWorkerProvider>
   );
 });

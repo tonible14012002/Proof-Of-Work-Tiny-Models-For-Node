@@ -40,11 +40,11 @@ export const SidebarFooter = ({
   const getPlanColor = () => {
     switch (plan.type) {
       case "pro":
-        return "border-amber-200 bg-amber-50";
+        return "border-border bg-accent";
       case "enterprise":
-        return "border-purple-200 bg-purple-50";
+        return "border-border bg-accent";
       default:
-        return "border-blue-200 bg-blue-50";
+        return "border-border bg-accent";
     }
   };
 
