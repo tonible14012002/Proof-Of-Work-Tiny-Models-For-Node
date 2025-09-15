@@ -5,7 +5,9 @@ import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { Lightbulb } from "lucide-react";
 import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
+import { useUserConfig } from "@/hooks/useUserConfig";
 
 interface SentimentAnalysisV2Props {
   modelId: string;
@@ -26,6 +28,9 @@ const schema = z.object({
 
 export const SentimentAnalysisFormV2 = (props: SentimentAnalysisV2Props) => {
   const { onInferenceSubmit, disabled } = props;
+  const { config } = useUserConfig();
+  const isExpertMode = config?.expertMode ?? false;
+
   const formInstance = useForm({
     defaultValues: {
       input: "",
@@ -44,52 +49,48 @@ export const SentimentAnalysisFormV2 = (props: SentimentAnalysisV2Props) => {
 
   return (
     <Form {...formInstance}>
-      <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-xs md:text-sm">
-            Sentiment Analysis
-          </h3>
-          <ExamplePromptsPopover
-            currentTask="sentiment-analysis"
-            onSelectPrompt={handlePromptSelect}
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <FormTextArea
+          name="input"
+          label="Text to analyze"
+          labelRightEl={
+            <ExamplePromptsPopover
+              currentTask="sentiment-analysis"
+              onSelectPrompt={handlePromptSelect}
+              triggerEl={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Show example prompts"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                </Button>
+              }
+            />
+          }
+          cols={5}
+          className="text-sm"
+          placeholder="Enter the text for sentiment analysis..."
+        />
+
+        {isExpertMode && (
+          <FormSelection
+            name="topK"
+            label="Top K"
+            description="Number of top results to return"
+            options={["null", 1, 2, 3, 4, 5].map((value) => ({
+              label: value.toString(),
+              value: value.toString(),
+            }))}
+            className="text-sm"
           />
-        </div>
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="user-input"
-            >
-              User input
-            </label>
-            <FormTextArea
-              name="input"
-              cols={5}
-              className="min-h-[100px] text-sm"
-              placeholder="Enter the text for sentiment analysis..."
-            />
-          </div>
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="top-k"
-            >
-              Top K
-            </label>
-            <FormSelection
-              name="topK"
-              options={["null", 1, 2, 3, 4, 5].map((value) => ({
-                label: value.toString(),
-                value: value.toString(),
-              }))}
-            />
-          </div>
-          <div className="flex flex-col">
-            <Button variant="default" type="submit" disabled={disabled}>
-              Submit
-            </Button>
-          </div>
-        </div>
+        )}
+
+        <Button type="submit" disabled={disabled} className="w-full">
+          Analyze Sentiment
+        </Button>
       </form>
     </Form>
   );

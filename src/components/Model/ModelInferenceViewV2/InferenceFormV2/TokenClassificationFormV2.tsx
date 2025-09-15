@@ -4,6 +4,7 @@ import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { Lightbulb } from "lucide-react";
 import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
 
 interface TokenClassificationFormV2Props {
@@ -58,58 +59,35 @@ export const TokenClassificationFormV2 = (
 
   return (
     <Form {...formInstance}>
-      <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-xs md:text-sm">
-            Token Classification
-          </h3>
-          <ExamplePromptsPopover
-            currentTask="token-classification"
-            onSelectPrompt={handlePromptSelect}
-          />
-        </div>
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="user-input"
-            >
-              Text to classify
-            </label>
-            <FormTextArea
-              name="input"
-              cols={5}
-              className="text-sm"
-              placeholder="Enter the text for token classification..."
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <FormTextArea
+          name="input"
+          label="Text to classify"
+          labelRightEl={
+            <ExamplePromptsPopover
+              currentTask="token-classification"
+              onSelectPrompt={handlePromptSelect}
+              triggerEl={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Show example prompts"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                </Button>
+              }
             />
-          </div>
-          {/* <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="aggregation-strategy"
-            >
-              Aggregation Strategy
-            </label>
-            <FormSelection
-              name="aggregation_strategy"
-              options={[
-                { label: "None", value: "null" },
-                { label: "Simple", value: "simple" },
-                { label: "First", value: "first" },
-                { label: "Average", value: "average" },
-                { label: "Max", value: "max" },
-              ]}
-            />
-            <p className="text-xs text-muted-foreground">
-              Strategy for aggregating token predictions
-            </p>
-          </div> */}
-          <div className="flex flex-col">
-            <Button type="submit" disabled={disabled}>
-              Classify Tokens
-            </Button>
-          </div>
-        </div>
+          }
+          cols={5}
+          className="text-sm"
+          placeholder="Enter the text for token classification..."
+        />
+
+        <Button type="submit" disabled={disabled} className="w-full">
+          Classify Tokens
+        </Button>
       </form>
     </Form>
   );

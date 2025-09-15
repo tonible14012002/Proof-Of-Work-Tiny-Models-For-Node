@@ -4,12 +4,12 @@ import { FormSelection } from "@/components/common/Form/FormSelect";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import z from "zod";
 import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Lightbulb } from "lucide-react";
+import { useUserConfig } from "@/hooks/useUserConfig";
 
 interface TextGenerationFormV2Props {
   modelId: string;
@@ -58,6 +58,8 @@ const schema = z.object({
 
 export const TextGenerationFormV2 = (props: TextGenerationFormV2Props) => {
   const { onInferenceSubmit, disabled } = props;
+  const { config } = useUserConfig();
+  const isExpertMode = config?.expertMode ?? false;
 
   const formInstance = useForm({
     defaultValues: {
@@ -81,7 +83,7 @@ export const TextGenerationFormV2 = (props: TextGenerationFormV2Props) => {
     console.log(data);
     const submitData = {
       messages: data.messages,
-      options: data.do_sample
+      options: isExpertMode && data.do_sample
         ? {
             do_sample: true,
             max_new_tokens: Number(data.max_new_tokens ?? 1024),
@@ -116,33 +118,34 @@ export const TextGenerationFormV2 = (props: TextGenerationFormV2Props) => {
 
   return (
     <Form {...formInstance}>
-      <form className="p-2 md:p-4 rounded-xl border" onSubmit={onSubmit}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-xs md:text-sm">Text Generation</h3>
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium">Text Generation</h3>
           <div className="flex items-center gap-2">
             <ExamplePromptsPopover
               currentTask="text-generation"
               onSelectPrompt={handlePromptSelect}
+              triggerEl={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Show example prompts"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                </Button>
+              }
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-3 p-2 bg-muted/30 rounded-lg">
-          <label className="text-xs font-medium text-muted-foreground">
-            Advanced Options
-          </label>
-          <Switch
-            checked={watchDoSampling}
-            onCheckedChange={(value) => {
-              formInstance.setValue("do_sample", value);
-            }}
-          />
-        </div>
-        <div className="space-y-3">
+
+        <div className="space-y-4">
           {/* Messages */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="block text-xs text-muted-foreground font-medium">
+              <label className="text-sm font-medium text-muted-foreground">
                 Messages
               </label>
               <Button
@@ -150,7 +153,7 @@ export const TextGenerationFormV2 = (props: TextGenerationFormV2Props) => {
                 variant="outline"
                 size="sm"
                 onClick={addMessage}
-                className="h-6 px-2"
+                className="h-7 px-2"
               >
                 <Plus className="h-3 w-3" />
               </Button>
@@ -158,7 +161,7 @@ export const TextGenerationFormV2 = (props: TextGenerationFormV2Props) => {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="border rounded-lg p-2 md:p-3 space-y-2"
+                className="rounded-lg p-3 space-y-3 bg-muted/20"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -207,47 +210,60 @@ export const TextGenerationFormV2 = (props: TextGenerationFormV2Props) => {
             ))}
           </div>
 
-          {/* Advanced Generation Parameters */}
-          {watchDoSampling && (
-            <div className="space-y-3 p-3 border rounded-lg bg-muted/10">
+          {/* Advanced Generation Parameters - Expert Mode Only */}
+          {isExpertMode && (
+            <div className="space-y-4 p-3 rounded-lg bg-muted/10">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-muted-foreground">
+                  Advanced Options
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={watchDoSampling}
+                    onChange={(e) => formInstance.setValue("do_sample", e.target.checked)}
+                    className="rounded"
+                  />
+                  Enable sampling
+                </label>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="block text-xs text-muted-foreground font-medium">
-                    Max new tokens
-                  </label>
-                  <FormInput name="max_new_tokens" type="number" min={1} />
-                </div>
+                <FormInput
+                  name="max_new_tokens"
+                  label="Max new tokens"
+                  description="Maximum number of tokens to generate"
+                  type="number"
+                  min={1}
+                  className="text-sm"
+                />
               </div>
 
               {/* Sampling Parameters - only shown when sampling is enabled */}
               {watchDoSampling && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t">
-                  <div className="space-y-1">
-                    <label className="block text-xs text-muted-foreground font-medium">
-                      Temperature
-                    </label>
-                    <FormInput
-                      name="temperature"
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="2"
-                      placeholder="0.7"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="block text-xs text-muted-foreground font-medium">
-                      Top P
-                    </label>
-                    <FormInput
-                      name="top_p"
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="1"
-                      placeholder="0.9"
-                    />
-                  </div>
+                  <FormInput
+                    name="temperature"
+                    label="Temperature"
+                    description="Randomness (0-2)"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="2"
+                    placeholder="0.7"
+                    className="text-sm"
+                  />
+                  <FormInput
+                    name="top_p"
+                    label="Top P"
+                    description="Nucleus sampling (0-1)"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="1"
+                    placeholder="0.9"
+                    className="text-sm"
+                  />
                 </div>
               )}
             </div>

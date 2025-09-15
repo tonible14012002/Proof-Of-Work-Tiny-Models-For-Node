@@ -5,7 +5,9 @@ import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { Lightbulb } from "lucide-react";
 import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
+import { useUserConfig } from "@/hooks/useUserConfig";
 
 interface ZeroShotClassificationFormV2Props {
   modelId: string;
@@ -23,6 +25,9 @@ export const ZeroShotClassificationFormV2 = (
   props: ZeroShotClassificationFormV2Props
 ) => {
   const { onInferenceSubmit, disabled } = props;
+  const { config } = useUserConfig();
+  const isExpertMode = config?.expertMode ?? false;
+
   const formInstance = useForm({
     defaultValues: {
       input: "",
@@ -42,6 +47,7 @@ export const ZeroShotClassificationFormV2 = (
     onInferenceSubmit?.({
       text: data.input,
       labels: labelsArray,
+      ...(data.template && { template: data.template }),
     });
   });
 
@@ -51,70 +57,55 @@ export const ZeroShotClassificationFormV2 = (
 
   return (
     <Form {...formInstance}>
-      <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-xs md:text-sm">
-            Zero-Shot Classification
-          </h3>
-          <ExamplePromptsPopover
-            currentTask="zero-shot-classification"
-            onSelectPrompt={handlePromptSelect}
-          />
-        </div>
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="user-input"
-            >
-              Text to classify
-            </label>
-            <FormTextArea
-              name="input"
-              cols={5}
-              className="text-sm"
-              placeholder="Enter the text you want to classify..."
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <FormTextArea
+          name="input"
+          label="Text to classify"
+          labelRightEl={
+            <ExamplePromptsPopover
+              currentTask="zero-shot-classification"
+              onSelectPrompt={handlePromptSelect}
+              triggerEl={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Show example prompts"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                </Button>
+              }
             />
-          </div>
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="labels"
-            >
-              Labels (comma-separated)
-            </label>
+          }
+          cols={5}
+          className="text-sm"
+          placeholder="Enter the text you want to classify..."
+        />
+
+        {isExpertMode && (
+          <>
             <FormInput
               name="labels"
+              label="Labels (comma-separated)"
+              description='Enter labels separated by commas (e.g., "positive, negative, neutral")'
               placeholder="positive, negative, neutral"
               className="text-sm"
             />
-            <p className="text-xs text-muted-foreground">
-              Enter labels separated by commas (e.g., "positive, negative,
-              neutral")
-            </p>
-            <div className="space-y-1">
-              <label
-                className="block text-xs text-muted-foreground font-medium"
-                htmlFor="labels"
-              >
-                Hypothesis template
-              </label>
-              <FormInput
-                name="template"
-                placeholder="This is {} related"
-                className="text-sm"
-              />
-              <p className="text-xs text-muted-foreground">
-                Use &#123;&#125; as placeholder for label
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <Button type="submit" disabled={disabled}>
-              Classify
-            </Button>
-          </div>
-        </div>
+
+            <FormInput
+              name="template"
+              label="Hypothesis template"
+              description="Use {} as placeholder for label"
+              placeholder="This is {} related"
+              className="text-sm"
+            />
+          </>
+        )}
+
+        <Button type="submit" disabled={disabled} className="w-full">
+          Classify
+        </Button>
       </form>
     </Form>
   );

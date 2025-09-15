@@ -1,8 +1,10 @@
 import { ROUTES } from "@/constants/routes";
 import { useModels } from "@/provider/ModelsProvider";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { LoaderCircle, Heart } from "lucide-react";
+import { LoaderCircle, Heart, LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useWorkerContext } from "@/provider/ModelWorkerProvider";
+import { useUserConfig } from "@/hooks/useUserConfig";
 
 // Import V2 Form Components
 import {
@@ -43,6 +45,7 @@ import type {
 import type { ModelParams } from "@/constants/routes";
 import { ModelInformation } from "@/components/Model/ModelInformation";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 // Union type for all possible results
 type InferenceResult =
@@ -57,7 +60,9 @@ type InferenceResult =
   | undefined;
 
 export const ModelInferenceViewV2 = () => {
-  const { selectedModel } = useModels();
+  const { selectedModel, setModelLoading } = useModels();
+  const { loadModel } = useWorkerContext();
+  const { config } = useUserConfig();
   const navigate = useNavigate();
   const { modelId } = useParams({ strict: false }) as ModelParams;
   const [result, setResult] = useState<InferenceResult>();
@@ -153,6 +158,12 @@ export const ModelInferenceViewV2 = () => {
 
   const handleToggleFavorite = () => {
     setIsFavorite(!isFavorite);
+  };
+
+  const handleLoadModel = () => {
+    if (!selectedModel) return;
+    setModelLoading(selectedModel.id, true);
+    loadModel(selectedModel);
   };
 
   if (!selectedModel) {
@@ -257,9 +268,16 @@ export const ModelInferenceViewV2 = () => {
         return result ? (
           <div className="p-4 rounded-xl border">
             <h3 className="font-semibold text-sm mb-3">Result</h3>
-            <pre className="text-sm bg-muted p-3 rounded overflow-auto">
-              {JSON.stringify(result, null, 2)}
-            </pre>
+            <div className="bg-muted p-3 rounded">
+              <pre className="text-sm overflow-auto whitespace-pre-wrap">
+                {JSON.stringify(result.data, null, 2)}
+              </pre>
+            </div>
+            {result.latency && (
+              <div className="text-xs text-muted-foreground mt-2">
+                Processing time: {result.latency.toFixed(0)}ms
+              </div>
+            )}
           </div>
         ) : null;
     }
@@ -268,7 +286,7 @@ export const ModelInferenceViewV2 = () => {
   return (
     <div className="space-y-8">
       {/* Model Header */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
         <div className="flex-1">
           <h1 className="text-2xl font-bold">{selectedModel.name}</h1>
           <p className="text-muted-foreground text-sm">
@@ -276,7 +294,20 @@ export const ModelInferenceViewV2 = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 sm:flex-shrink-0">
+          {!config?.autoLoadModel && !selectedModel.loaded && (
+            <Button
+              onClick={handleLoadModel}
+              size="sm"
+              disabled={selectedModel.loading}
+              className="flex items-center gap-2"
+            >
+              {selectedModel.loading && (
+                <LoaderIcon size={16} className="animate-spin" />
+              )}
+              Load Model
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -286,30 +317,36 @@ export const ModelInferenceViewV2 = () => {
             <Heart
               className={`h-4 w-4 ${isFavorite ? 'fill-current text-red-500' : ''}`}
             />
-            {isFavorite ? 'Saved' : 'Save'}
+            <span className="hidden xs:inline">{isFavorite ? 'Saved' : 'Save'}</span>
           </Button>
           <ModelInformation model={selectedModel} />
         </div>
       </div>
 
-      {/* Status Bar */}
-      <div className="flex items-center gap-4 text-sm border-b pb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground">Status:</span>
+      {/* Status Section */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
           {selectedModel.loading ? (
-            <span className="text-amber-600">Loading...</span>
+            <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200">
+              <LoaderIcon className="w-3 h-3 mr-1.5 animate-spin" />
+              Loading
+            </Badge>
           ) : selectedModel.loaded ? (
-            <span className="text-green-600">Ready</span>
+            <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-1.5" />
+              Ready
+            </Badge>
           ) : (
-            <span className="text-muted-foreground">Not loaded</span>
+            <Badge variant="outline" className="text-muted-foreground">
+              Not Loaded
+            </Badge>
           )}
         </div>
 
         {selectedModel.loaded && (
-          <>
-            <div className="text-muted-foreground">•</div>
-            <div className="text-muted-foreground">Loaded in 2.3s</div>
-          </>
+          <div className="text-xs text-muted-foreground">
+            Loaded in 2.3s
+          </div>
         )}
       </div>
 

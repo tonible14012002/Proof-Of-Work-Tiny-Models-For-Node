@@ -5,7 +5,9 @@ import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { Lightbulb } from "lucide-react";
 import { ExamplePromptsPopover } from "@/components/common/ExamplePromptsPopover";
+import { useUserConfig } from "@/hooks/useUserConfig";
 
 interface Text2TextGenerationFormV2Props {
   modelId: string;
@@ -28,6 +30,9 @@ export const Text2TextGenerationFormV2 = (
   props: Text2TextGenerationFormV2Props
 ) => {
   const { onInferenceSubmit, disabled } = props;
+  const { config } = useUserConfig();
+  const isExpertMode = config?.expertMode ?? false;
+
   const formInstance = useForm({
     defaultValues: {
       input: "",
@@ -46,39 +51,46 @@ export const Text2TextGenerationFormV2 = (
 
   return (
     <Form {...formInstance}>
-      <form className="p-4 rounded-xl border" onSubmit={onSubmit}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-xs md:text-sm">Text2Text Generation</h3>
-          <ExamplePromptsPopover currentTask="text2text-generation" onSelectPrompt={handlePromptSelect} />
-        </div>
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="user-input"
-            >
-              User input
-            </label>
-            <FormTextArea
-              name="input"
-              cols={5}
-              className="text-sm"
-              placeholder="Enter your text..."
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <FormTextArea
+          name="input"
+          label="Text to transform"
+          labelRightEl={
+            <ExamplePromptsPopover
+              currentTask="text2text-generation"
+              onSelectPrompt={handlePromptSelect}
+              triggerEl={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  aria-label="Show example prompts"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                </Button>
+              }
             />
-          </div>
-          <div className="space-y-1">
-            <label
-              className="block text-xs text-muted-foreground font-medium"
-              htmlFor="max_new_tokens"
-            >
-              Max new tokens
-            </label>
-            <FormInput name="max_new_tokens" type="number" min={1} />
-          </div>
-          <Button type="submit" className="w-full" disabled={disabled}>
-            Generate
-          </Button>
-        </div>
+          }
+          cols={5}
+          className="text-sm"
+          placeholder="Enter your text..."
+        />
+
+        {isExpertMode && (
+          <FormInput
+            name="max_new_tokens"
+            label="Max new tokens"
+            description="Maximum number of tokens to generate"
+            type="number"
+            min={1}
+            className="text-sm"
+          />
+        )}
+
+        <Button type="submit" disabled={disabled} className="w-full">
+          Generate
+        </Button>
       </form>
     </Form>
   );
