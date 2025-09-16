@@ -14,7 +14,8 @@
         "A distilled version of BERT fine-tuned on the Multi-Genre Natural Language Inference (MNLI) dataset, configured for payment detection. This model can classify text to determine if it contains payment-related content or not. Using zero-shot classification with labels 'Payment' and 'Not Payment', it's ideal for financial document processing, transaction categorization, and automated payment identification.",
       "huggingfaceUrl":
         "https://huggingface.co/Xenova/distilbert-base-uncased-mnli",
-      "modelSize": "268MB"
+      "modelSize": "268MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -33,7 +34,8 @@
       "description":
         "MobileBERT model fine-tuned on MNLI dataset, optimized for mobile payment detection. A lightweight BERT variant that efficiently classifies text as payment-related or not. Perfect for mobile applications, edge devices, and resource-constrained environments that need fast payment detection capabilities without compromising accuracy.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/mobilebert-uncased-mnli",
-      "modelSize": "132MB"
+      "modelSize": "132MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -51,7 +53,8 @@
       "description":
         "BART model fine-tuned for summarization on CNN Daily Mail articles. This model can generate concise summaries of long text documents while preserving key information. It's specifically trained on news articles, making it ideal for summarizing factual content and extracting the most important points from longer texts.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/bart-large-cnn",
-      "modelSize": "558MB"
+      "modelSize": "558MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -69,7 +72,8 @@
       "description":
         "A distilled version of BART optimized for CNN summarization. This smaller model maintains good summarization quality while being more efficient than the full BART model. It's perfect for applications where you need fast summarization without sacrificing too much quality, especially for news and article content.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/distilbart-cnn-6-6",
-      "modelSize": "324MB"
+      "modelSize": "324MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -88,7 +92,8 @@
         "Multilingual BERT model fine-tuned for Named Entity Recognition (NER) on the HRL dataset. Can identify entities like persons, organizations, and locations in multiple languages. This makes it particularly useful for processing international documents, multilingual content, and applications that need to extract structured information from text in various languages.",
       "huggingfaceUrl":
         "https://huggingface.co/Xenova/bert-base-multilingual-cased-ner-hrl",
-      "modelSize": "714MB"
+      "modelSize": "714MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -107,7 +112,8 @@
         "A distilled version of BERT fine-tuned for sentiment analysis on the SST-2 dataset. This model can classify text as positive or negative sentiment with high accuracy. It's specifically designed for binary sentiment classification, making it ideal for social media monitoring, customer feedback analysis, and any application requiring quick positive/negative sentiment detection.",
       "huggingfaceUrl":
         "https://huggingface.co/Xenova/distilbert-base-uncased-finetuned-sst-2-english",
-      "modelSize": "268MB"
+      "modelSize": "268MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -126,7 +132,8 @@
         "Multilingual BERT model fine-tuned for sentiment analysis. Can analyze sentiment in multiple languages, making it useful for international applications. This model is perfect for global businesses, international social media monitoring, and any scenario where you need to understand sentiment across different languages without training separate models for each language.",
       "huggingfaceUrl":
         "https://huggingface.co/Xenova/bert-base-multilingual-uncased-sentiment",
-      "modelSize": "714MB"
+      "modelSize": "714MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -143,7 +150,8 @@
       "description":
         "BERT model fine-tuned specifically for financial sentiment analysis. Optimized for analyzing sentiment in financial texts, news, and reports. This model is specialized for financial domain language, making it ideal for analyzing market sentiment, financial news, earnings reports, and any text where understanding financial context is crucial for accurate sentiment assessment.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/finbert",
-      "modelSize": "438MB"
+      "modelSize": "438MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -160,7 +168,8 @@
       "description":
         "BERT model fine-tuned for toxic comment classification. Can identify various types of toxic content including hate speech, threats, and insults. This model is essential for content moderation, online community management, and any platform that needs to automatically detect and filter harmful content to maintain safe user environments.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/toxic-bert",
-      "modelSize": "438MB"
+      "modelSize": "438MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -180,7 +189,8 @@
       "description":
         "Lightweight ONNX-compatible version of OpenAI's Whisper-tiny model optimized for web-based speech transcription. This tiny variant provides quick and efficient automatic speech recognition for multilingual audio, making it perfect for browser-based applications requiring fast speech-to-text conversion without sacrificing too much accuracy.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/whisper-tiny",
-      "modelSize": "78MB"
+      "modelSize": "78MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -200,7 +210,8 @@
       "description":
         "ONNX-compatible version of OpenAI's whisper-small model designed for web-based speech transcription. Offers better accuracy than the tiny variant while still maintaining good performance for browser environments. Supports multilingual speech recognition and can transcribe audio directly from URLs, making it ideal for JavaScript applications requiring reliable speech-to-text functionality.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/whisper-small",
-      "modelSize": "488MB"
+      "modelSize": "488MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -220,7 +231,8 @@
       "description":
         "English-specific version of OpenAI's Whisper-tiny model optimized for web compatibility using ONNX weights. This lightweight model is specifically trained for English speech recognition and supports flexible transcription options including basic text, timestamps, and word-level timestamp generation. Perfect for English-only applications requiring fast and efficient speech transcription.",
       "huggingfaceUrl": "https://huggingface.co/Xenova/whisper-tiny.en",
-      "modelSize": "78MB"
+      "modelSize": "78MB",
+      "author": "Xenova"
     },
     "loadFiles": {},
     "loaded": false,
@@ -240,7 +252,8 @@
       "description":
         "ONNX-converted version of OpenAI's Whisper-base model designed for web environments using Transformers.js. This base variant offers improved accuracy over smaller models while remaining suitable for web deployment. Supports multilingual automatic speech recognition and is optimized for real-time speech transcription in browser-based applications.",
       "huggingfaceUrl": "https://huggingface.co/onnx-community/whisper-base",
-      "modelSize": "290MB"
+      "modelSize": "290MB",
+      "author": "ONNX Community"
     },
     "loadFiles": {},
     "loaded": false,
@@ -260,7 +273,8 @@
       "description":
         "Qwen2.5-0.5B is a small but powerful language model from the Qwen2.5 series with 0.5 billion parameters. Optimized for ONNX and web deployment, it offers efficient text generation capabilities while maintaining good performance for various natural language tasks including completion, conversation, and creative writing.",
       "huggingfaceUrl": "https://huggingface.co/onnx-community/Qwen2.5-0.5B",
-      "modelSize": "496MB"
+      "modelSize": "496MB",
+      "author": "ONNX Community"
     },
     "loadFiles": {},
     "loaded": false,
@@ -281,7 +295,8 @@
         "Qwen2.5-0.5B-Instruct is an instruction-tuned version of Qwen2.5-0.5B optimized for following instructions and engaging in helpful conversations. This model is fine-tuned to be more responsive to user prompts and provides better alignment for chat-based applications, question answering, and instruction-following tasks.",
       "huggingfaceUrl":
         "https://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct",
-      "modelSize": "496MB"
+      "modelSize": "496MB",
+      "author": "ONNX Community"
     },
     "loadFiles": {},
     "loaded": false,
