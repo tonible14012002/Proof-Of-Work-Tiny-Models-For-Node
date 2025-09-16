@@ -1,5 +1,27 @@
 [
   {
+    "id": "payment-detection-finetuned-tiny-bert",
+    "name": "Payment Intent Detection",
+    "modelPath": "maroon14/payment-detect-onnx",
+    "category": "Language Processing",
+    "task": "text-classification",
+    "dtype": null,
+    "config": {
+      "device": "auto"
+    },
+    "metadata": {
+      "description":
+        "A fine-tuned version of BERT Tiny for automated payment identification.",
+      "huggingfaceUrl":
+        "https://huggingface.co/maroon14/payment-detect-onnx",
+      "modelSize": "15MB",
+      "author": "maroon14"
+    },
+    "loadFiles": {},
+    "loaded": false,
+    "loading": false
+  },
+  {
     "id": "zero-shot-classification-distilbert",
     "name": "Payment Detection Classifier",
     "modelPath": "Xenova/distilbert-base-uncased-mnli",
