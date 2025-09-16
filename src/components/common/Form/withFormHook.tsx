@@ -78,10 +78,11 @@ export const withForm = <
         disabled?: boolean;
         label?: string;
         description?: string;
+        labelRightEl?: React.ReactNode;
       },
       ref: ElementRef<any>
     ) => {
-      const { label, description, name, disabled, ...restProps } = props;
+      const { label, description, name, disabled, labelRightEl, ...restProps } = props;
       const { setValue } = useFormContext<TFieldValues>();
 
       return (
@@ -90,7 +91,12 @@ export const withForm = <
           render={({ field: { value, onChange, onBlur } }) => {
             return (
               <FormItem>
-                {label ? <FormLabel>{label}</FormLabel> : null}
+                {label ? (
+                  <div className="flex items-center justify-between">
+                    <FormLabel>{label}</FormLabel>
+                    {labelRightEl && labelRightEl}
+                  </div>
+                ) : null}
                 <FormControl>
                   {/*  @ts-expect-error allow miss match of props*/}
                   <Component

@@ -158,12 +158,12 @@ export const eventHandlers = {
         data.input,
         data.params
       );
-      console.log("Inference result:", result);
       self.postMessage(
         makeMessage({
           data: {
             data: result,
             latency: performance.now() - latency,
+            task: data.task,
           },
           modelId: modelId,
           type: MODEL_WORKER_EVENT.WORKER.inference_complete,

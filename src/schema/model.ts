@@ -1,6 +1,8 @@
 import type { ModelMainEvent, ModelWorkerEvent } from "@/constants/event";
 import { type PretrainedModelOptions } from "@huggingface/transformers";
 
+export type Category = "Language Processing" | "Vision" | "Audio" | "Multimodal" | "Other";
+
 export type DType = 
 | "auto"
 | "bnb4"
@@ -13,9 +15,10 @@ export type DType =
 | "uint8"
 
 export type ModelDetail = {
-  id: string;
-  name: string;
-  modelPath: string;
+  id: string; // app's ID
+  category: Category; // Model category
+  name: string; // Display name
+  modelPath: string; // HuggingFace repo ID
   config?: Omit<PretrainedModelOptions, "progress_callback" | "dtype">;
   dtype?: DType;
   task:
@@ -35,6 +38,7 @@ export type ModelDetail = {
   metadata?: {
     description: string;
     huggingfaceUrl: string;
+    modelSize?: string;
   };
 
   // Loading information
@@ -53,6 +57,9 @@ export type FileLoadInfo = {
   status: "initiate" | "download" | "progress" | "done";
   duration: number;
 };
+
+
+// Model Interfaces
 
 export type InitModelInput = {
   task: ModelDetail["task"];
@@ -79,6 +86,7 @@ export type WorkerMessage<T = any> = {
 export type BaseInferenceResult<T = any> = {
   data: T;
   latency: number;
+  task: ModelDetail["task"];
 };
 
 export type SummarizerResult = BaseInferenceResult<{ summary_text: string }[]>;

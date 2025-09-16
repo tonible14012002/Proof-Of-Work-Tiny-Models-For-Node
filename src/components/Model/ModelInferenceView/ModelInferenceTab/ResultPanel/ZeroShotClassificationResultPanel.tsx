@@ -26,23 +26,17 @@ export const ZeroShotClassificationResultPanel = (
         )}
       >
         {result && (
-          <>
-            <div className="mb-3">
-              <p className="text-sm text-muted-foreground mb-1">Input text:</p>
-              <p className="font-medium">{result.data.sequence}</p>
-            </div>
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Classification results:</p>
-              {result.data.labels.map((label, index) => (
-                <div key={index} className="flex justify-between items-center py-1">
-                  <p className="font-medium">{label}</p>
-                  <p className="text-muted-foreground">
-                    {result.data.scores[index].toFixed(4)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Classification results:</p>
+            {result.data.labels.map((label, index) => (
+              <div key={index} className="flex justify-between items-center py-1">
+                <p className="font-medium">{label}</p>
+                <p className="text-muted-foreground">
+                  {result.data.scores[index].toFixed(4)}
+                </p>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
