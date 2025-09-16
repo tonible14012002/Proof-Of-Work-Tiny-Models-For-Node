@@ -545,10 +545,12 @@ export const ModelInferenceViewV2 = () => {
           <ModelInformation model={selectedModel} />
         </div>
       </div>
+      {/* Author Section */}
 
       {/* Status Section */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
+          <Badge>authored by {selectedModel.metadata?.author}</Badge>
           {selectedModel.loading ? (
             <Badge
               variant="secondary"

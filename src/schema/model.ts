@@ -39,6 +39,7 @@ export type ModelDetail = {
     description: string;
     huggingfaceUrl: string;
     modelSize?: string;
+    author?: string;
   };
 
   // Loading information
