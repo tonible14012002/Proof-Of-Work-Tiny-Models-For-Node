@@ -203,7 +203,7 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
                 Favorites ({favoriteModels.length})
               </SidebarLabel>
             </AccordionTrigger>
-            <AccordionContent className="pb-0">
+            <AccordionContent className="pb-3">
               {favoriteModels.length === 0 ? (
                 <EmptySidebarItem message="No favorite models saved" />
               ) : (
@@ -264,7 +264,7 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
                     {category}
                   </SidebarLabel>
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="pb-3">
                   <SidebarList level={1}>
                     {models.map((model) => (
                       <SidebarItem
@@ -285,7 +285,7 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
         </Accordion>
       </ScrollArea>
 
-      <SidebarFooter plan={plan} />
+      {/* <SidebarFooter plan={plan} /> */}
     </div>
   );
 });
