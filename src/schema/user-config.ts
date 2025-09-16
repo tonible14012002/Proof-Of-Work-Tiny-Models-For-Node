@@ -5,7 +5,7 @@ export interface UserConfigDetail {
 
 export const DEFAULT_USER_CONFIG: UserConfigDetail = {
   expertMode: false,
-  autoLoadModel: true,
+  autoLoadModel: false,
 };
 
 // Validation function
