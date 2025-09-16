@@ -8,11 +8,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Switch } from "@/components/ui/switch";
-import {
-  SettingsIcon,
-  DownloadIcon,
-  GraduationCap,
-} from "lucide-react";
+import { SettingsIcon, DownloadIcon, GraduationCap } from "lucide-react";
 import { useUserConfig } from "@/hooks/useUserConfig";
 
 interface UserSettingDropdownProps {
@@ -37,7 +33,9 @@ export const UserSettingDropdown = memo(
             Expert Mode
             <Switch
               checked={config?.expertMode ?? false}
-              onCheckedChange={(checked) => updateConfig({ expertMode: checked })}
+              onCheckedChange={(checked) =>
+                updateConfig({ expertMode: checked })
+              }
               disabled={isLoading}
               className="ml-auto"
             />
@@ -47,8 +45,11 @@ export const UserSettingDropdown = memo(
             Auto Load Model on Inference
             <Switch
               checked={config?.autoLoadModel ?? true}
-              onCheckedChange={(checked) => updateConfig({ autoLoadModel: checked })}
-              disabled={isLoading}
+              onCheckedChange={(checked) =>
+                updateConfig({ autoLoadModel: checked })
+              }
+              // eslint-disable-next-line no-constant-binary-expression
+              disabled={true || isLoading}
               className="ml-auto"
             />
           </DropdownMenuItem>
