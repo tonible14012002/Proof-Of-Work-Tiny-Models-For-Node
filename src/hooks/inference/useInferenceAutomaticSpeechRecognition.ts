@@ -73,15 +73,19 @@ export const useInferenceAutomaticSpeechRecognition = (modelId?: string) => {
         {}
       );
 
-      let latency = 0
+      console.log("ASR autoSpeechRecognizer", input);
+
+      let latency = 0;
       const now = performance.now();
       const modelResult = await autoSpeechRecognizer(input.text, {});
+      console.log("ASR modelResult", modelResult);
       latency = performance.now() - now;
 
       setIsPending(false);
       return {
         latency,
-        data: modelResult 
+        data: modelResult,
+        task: "automatic-speech-recognition",
       } as AutomaticSpeechRecognitionResult;
     } catch (e: any) {
       console.error(e);

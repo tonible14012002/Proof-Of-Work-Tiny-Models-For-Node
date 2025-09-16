@@ -14,11 +14,13 @@ import { useState } from "react";
 interface ExamplePromptsPopoverProps {
   currentTask?: TaskWithExamples;
   onSelectPrompt?: (prompt: string) => void;
+  triggerEl?: React.ReactNode;
 }
 
 export const ExamplePromptsPopover = ({
   currentTask,
   onSelectPrompt,
+  triggerEl,
 }: ExamplePromptsPopoverProps) => {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
@@ -32,14 +34,20 @@ export const ExamplePromptsPopover = ({
     onSelectPrompt?.(pmpt);
   };
 
+  const defaultTrigger = (
+    <Button variant="outline" size="sm" className="gap-2">
+      <Lightbulb className="h-4 w-4" />
+      Examples
+    </Button>
+  );
+
+  const trigger = triggerEl || defaultTrigger;
+
   if (!isMobile) {
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Lightbulb className="h-4 w-4" />
-            Examples
-          </Button>
+          {trigger}
         </PopoverTrigger>
         <PopoverContent className="w-auto p-4 max-w-md" align="end">
           <div className="space-y-2">
@@ -60,10 +68,7 @@ export const ExamplePromptsPopover = ({
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Lightbulb className="h-4 w-4" />
-          Examples
-        </Button>
+        {trigger}
       </DrawerTrigger>
       <DrawerContent>
         <div className="p-4 space-y-2">
