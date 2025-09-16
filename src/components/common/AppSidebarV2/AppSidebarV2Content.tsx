@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { memo, useMemo, useState } from "react";
 import { SidebarSearchBar } from "./SidebarSearchBar";
-import { SidebarFooter } from "./SidebarFooter";
 import { SidebarLabel } from "../SidebarItem/SidebarLabel";
 import { Accordion, AccordionContent } from "@/components/ui/accordion";
 import { AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
@@ -34,15 +33,6 @@ interface AppSidebarV2ContentProps {
   className?: string;
   onSearch?: (query: string) => void;
   isMobile?: boolean;
-  plan?: {
-    name: string;
-    type: "free" | "pro" | "enterprise";
-    usage?: {
-      current: number;
-      limit: number;
-      unit: string;
-    };
-  };
 }
 
 const MODEL_CATEGORIES_ICONS = {
@@ -54,7 +44,7 @@ const MODEL_CATEGORIES_ICONS = {
 };
 
 export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
-  const { className, onSearch, plan, isMobile } = props;
+  const { className, onSearch, isMobile } = props;
   const { modelId } = useParams({ strict: false }) as ModelParams;
   const navigate = useNavigate();
   const { models } = useModels();
@@ -284,8 +274,6 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
           })}
         </Accordion>
       </ScrollArea>
-
-      {/* <SidebarFooter plan={plan} /> */}
     </div>
   );
 });
