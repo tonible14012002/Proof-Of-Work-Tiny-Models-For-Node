@@ -35,7 +35,7 @@ export const SidebarSearchBar = ({
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder={placeholder}
-          className={cn("pl-8")}
+          className={cn("pl-8 !text-sm")}
         />
 
         {query && (

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { InfoIcon, ExternalLinkIcon } from "lucide-react";
 import type { ModelDetail } from "@/schema/model";
 import { cn } from "@/lib/utils";
+import { formatReadableFileSize } from "@/utils/format";
 import { ResponsiveModelInfoDialog } from "./ResponsiveModelInfoDialog";
 
 interface ModelInformationProps {
@@ -20,6 +21,8 @@ export function ModelInformation({ model, className }: ModelInformationProps) {
       Model Info
     </Button>
   );
+
+  console.log(model.loadFiles)
 
   return (
     <ResponsiveModelInfoDialog
@@ -66,6 +69,15 @@ export function ModelInformation({ model, className }: ModelInformationProps) {
                   {model.dtype || 'auto'}
                 </div>
               </div>
+
+              {model.metadata?.modelSize && (
+                <div className="space-y-1">
+                  <div className="text-xs font-medium text-muted-foreground">Model Size</div>
+                  <div className="text-sm text-foreground">
+                    {model.metadata.modelSize}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -115,9 +127,14 @@ export function ModelInformation({ model, className }: ModelInformationProps) {
                 {Object.entries(model.loadFiles).map(([key, fileInfo]) => (
                   <div key={key} className="flex items-center justify-between p-2 bg-muted rounded text-xs">
                     <div className="flex-1 min-w-0">
-                      <div className="font-mono text-foreground truncate">{fileInfo.name}</div>
+                      <div className="font-mono text-foreground truncate">{fileInfo.file}</div>
                       <div className="text-muted-foreground">
-                        {fileInfo.loaded > 0 ? `${(fileInfo.loaded / 1024 / 1024).toFixed(1)}MB` : 'Not loaded'}
+                        {fileInfo.loaded > 0
+                          ? `${formatReadableFileSize(fileInfo.loaded)} / ${formatReadableFileSize(fileInfo.total)}`
+                          : fileInfo.total
+                            ? `0 / ${formatReadableFileSize(fileInfo.total)}`
+                            : 'Not loaded'
+                        }
                       </div>
                     </div>
                     <div className={cn(

@@ -38,6 +38,7 @@ export type ModelDetail = {
   metadata?: {
     description: string;
     huggingfaceUrl: string;
+    modelSize?: string;
   };
 
   // Loading information
@@ -85,6 +86,7 @@ export type WorkerMessage<T = any> = {
 export type BaseInferenceResult<T = any> = {
   data: T;
   latency: number;
+  task: ModelDetail["task"];
 };
 
 export type SummarizerResult = BaseInferenceResult<{ summary_text: string }[]>;

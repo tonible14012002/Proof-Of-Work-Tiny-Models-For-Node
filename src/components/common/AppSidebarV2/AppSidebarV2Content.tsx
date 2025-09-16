@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { SidebarSearchBar } from "./SidebarSearchBar";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarLabel } from "../SidebarItem/SidebarLabel";
@@ -21,8 +21,13 @@ import {
   EyeIcon,
   FileIcon,
   HeadphonesIcon,
-  PinIcon,
+  HeartIcon,
 } from "lucide-react";
+import {
+  // ModelFilters,
+  type FilterValues,
+  DEFAULT_FILTER_VALUES,
+} from "./ModelFilters";
 
 interface AppSidebarV2ContentProps {
   className?: string;
@@ -53,6 +58,9 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
   const navigate = useNavigate();
   const { models } = useModels();
   const { setOpen } = useAppSidebarContextV2();
+  const [filterValues, setFilterValues] = useState<FilterValues>(
+    DEFAULT_FILTER_VALUES
+  );
 
   const selectedModel = useMemo(
     () => models.find((model) => model.id === modelId),
@@ -61,8 +69,29 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
 
   const isModelSelected = Boolean(selectedModel);
 
+  const filteredModels = useMemo(() => {
+    let filtered = models;
+
+    // Filter by loaded status
+    if (filterValues.showLoadedOnly) {
+      filtered = filtered.filter((model) => model.loaded);
+    }
+
+    // Filter by search query
+    if (filterValues.searchQuery.trim()) {
+      const query = filterValues.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (model) =>
+          model.name.toLowerCase().includes(query) ||
+          model.id.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  }, [models, filterValues.showLoadedOnly, filterValues.searchQuery]);
+
   const groupModels = useMemo(() => {
-    return models.reduce(
+    return filteredModels.reduce(
       (acc, model) => {
         if (!acc[model.category]) {
           acc[model.category] = [];
@@ -70,17 +99,37 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
         acc[model.category].push(model);
         return acc;
       },
-      {} as Record<Category, typeof models>
+      {} as Record<Category, typeof filteredModels>
     );
-  }, [models]);
+  }, [filteredModels]);
 
   const defaultOpenCategories = useMemo(() => {
-    const categories = [];
-    if (selectedModel?.category) {
-      categories.push(selectedModel.category);
+    const categories: Category[] = [];
+    const hasActiveFilters =
+      filterValues.showLoadedOnly || filterValues.searchQuery.trim();
+
+    if (hasActiveFilters) {
+      // When filters are active, open all categories that have results
+      MODEL_CATEGORIES.forEach((category) => {
+        const modelsInCategory = groupModels[category];
+        if (modelsInCategory && modelsInCategory.length > 0) {
+          categories.push(category);
+        }
+      });
+    } else {
+      // When no filters are active, only open the selected model's category
+      if (selectedModel?.category) {
+        categories.push(selectedModel.category);
+      }
     }
+
     return categories;
-  }, [selectedModel?.category]);
+  }, [
+    selectedModel?.category,
+    filterValues.showLoadedOnly,
+    filterValues.searchQuery,
+    groupModels,
+  ]);
 
   const onModelClick = (modelId: string) => {
     navigate({
@@ -106,13 +155,45 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
       {isMobile && <AppHeaderLogo />}
       {isMobile && <div className="h-4" />}
 
-      <SidebarSearchBar onSearch={onSearch} />
-      <ScrollArea className="flex-1 mt-4 -mx-4 px-4 min-h-0 overflow-y-auto">
+      <div className="space-y-3">
+        <SidebarSearchBar
+          onSearch={(query) => {
+            setFilterValues((prev) => ({ ...prev, searchQuery: query }));
+            onSearch?.(query);
+          }}
+        />
+
+        <div className="flex items-center justify-between bg-muted p-2 rounded-lg">
+          <span className="text-xs text-muted-foreground font-medium">Loaded Only</span>
+          <button
+            onClick={() =>
+              setFilterValues((prev) => ({
+                ...prev,
+                showLoadedOnly: !prev.showLoadedOnly,
+              }))
+            }
+            className={cn(
+              "relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
+              filterValues.showLoadedOnly ? "bg-blue-600" : "bg-gray-200"
+            )}
+          >
+            <span
+              className={cn(
+                "inline-block h-3 w-3 transform rounded-full bg-white transition-transform",
+                filterValues.showLoadedOnly ? "translate-x-5" : "translate-x-1"
+              )}
+            />
+          </button>
+        </div>
+
+        {/* <ModelFilters value={filterValues} onChange={setFilterValues} /> */}
+      </div>
+      <ScrollArea className="flex-1 my-4 -mx-4 px-4 min-h-0 overflow-y-auto">
         <Accordion type="multiple" className="w-full">
           <AccordionItem value="all-models" className="w-full">
-            <AccordionTrigger className="w-full [&[data-state=open]_svg]:rotate-90">
+            <AccordionTrigger className="w-full">
               <SidebarLabel>
-                <PinIcon />
+                <HeartIcon />
                 Favorite
               </SidebarLabel>
             </AccordionTrigger>
@@ -123,6 +204,7 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
         </Accordion>
 
         <Accordion
+          key={`filter-${filterValues.showLoadedOnly}-${filterValues.searchQuery}`}
           type="multiple"
           className="w-full space-y-1"
           defaultValue={defaultOpenCategories}
