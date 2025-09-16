@@ -16,6 +16,7 @@ import type { Category } from "@/schema/model";
 import { MODEL_CATEGORIES } from "@/constants/model";
 import { AppHeaderLogo } from "../AppHeader/AppHeaderLogo";
 import { useAppSidebarContextV2 } from "./AppSidebarProviderV2";
+import { useFavorites } from "@/hooks/useFavorites";
 import {
   BookAIcon,
   EyeIcon,
@@ -57,6 +58,7 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
   const { modelId } = useParams({ strict: false }) as ModelParams;
   const navigate = useNavigate();
   const { models } = useModels();
+  const { favorites } = useFavorites();
   const { setOpen } = useAppSidebarContextV2();
   const [filterValues, setFilterValues] = useState<FilterValues>(
     DEFAULT_FILTER_VALUES
@@ -89,6 +91,10 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
 
     return filtered;
   }, [models, filterValues.showLoadedOnly, filterValues.searchQuery]);
+
+  const favoriteModels = useMemo(() => {
+    return models.filter(model => favorites.includes(model.id));
+  }, [models, favorites]);
 
   const groupModels = useMemo(() => {
     return filteredModels.reduce(
@@ -190,15 +196,31 @@ export const AppSidebarV2Content = memo((props: AppSidebarV2ContentProps) => {
       </div>
       <ScrollArea className="flex-1 my-4 -mx-4 px-4 min-h-0 overflow-y-auto">
         <Accordion type="multiple" className="w-full">
-          <AccordionItem value="all-models" className="w-full">
+          <AccordionItem value="favorites" className="w-full">
             <AccordionTrigger className="w-full">
               <SidebarLabel>
                 <HeartIcon />
-                Favorite
+                Favorites ({favoriteModels.length})
               </SidebarLabel>
             </AccordionTrigger>
             <AccordionContent className="pb-0">
-              <EmptySidebarItem message="No favorite models saved" />
+              {favoriteModels.length === 0 ? (
+                <EmptySidebarItem message="No favorite models saved" />
+              ) : (
+                <SidebarList level={1}>
+                  {favoriteModels.map((model) => (
+                    <SidebarItem
+                      key={model.id}
+                      isSelected={
+                        isModelSelected && model.id === selectedModel?.id
+                      }
+                      onClick={() => onModelClick(model.id)}
+                    >
+                      {model.name}
+                    </SidebarItem>
+                  ))}
+                </SidebarList>
+              )}
             </AccordionContent>
           </AccordionItem>
         </Accordion>

@@ -5,6 +5,7 @@ import { LoaderCircle, Heart, LoaderIcon, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useWorkerContext } from "@/provider/ModelWorkerProvider";
 import { useUserConfig } from "@/hooks/useUserConfig";
+import { useFavorites } from "@/hooks/useFavorites";
 
 // Import V2 Form Components
 import {
@@ -108,10 +109,10 @@ export const ModelInferenceViewV2 = () => {
   const { selectedModel, setModelLoading } = useModels();
   const { loadModel } = useWorkerContext();
   const { config } = useUserConfig();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const navigate = useNavigate();
   const { modelId } = useParams({ strict: false }) as ModelParams;
   const [result, setResult] = useState<InferenceResult>();
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isProgressPopoverOpen, setIsProgressPopoverOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -278,8 +279,13 @@ export const ModelInferenceViewV2 = () => {
     }
   };
 
-  const handleToggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+  const handleToggleFavorite = async () => {
+    if (!selectedModel) return;
+    try {
+      await toggleFavorite(selectedModel.id);
+    } catch (error) {
+      console.error("Failed to toggle favorite:", error);
+    }
   };
 
   const handleLoadModel = () => {
@@ -536,10 +542,10 @@ export const ModelInferenceViewV2 = () => {
             className="flex items-center gap-2"
           >
             <Heart
-              className={`h-4 w-4 ${isFavorite ? "fill-current text-red-500" : ""}`}
+              className={`h-4 w-4 ${isFavorite(selectedModel.id) ? "fill-current text-red-500" : ""}`}
             />
             <span className="hidden xs:inline">
-              {isFavorite ? "Saved" : "Save"}
+              {isFavorite(selectedModel.id) ? "Saved" : "Save"}
             </span>
           </Button>
           <ModelInformation model={selectedModel} />
