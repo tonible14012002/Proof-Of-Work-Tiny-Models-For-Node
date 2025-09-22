@@ -7,4 +7,5 @@ export type ModelParams = BaseParams<{
 export const ROUTES = {
   HOME: "/",
   MODEL: (modelId: string) => `/${modelId}`,
+  EXPERT_MODE: "/expert"
 };

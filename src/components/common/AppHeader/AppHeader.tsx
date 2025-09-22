@@ -2,10 +2,11 @@ import { memo } from "react";
 import { AppHeaderLogo } from "./AppHeaderLogo";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { MenuIcon } from "lucide-react";
+import { GraduationCap, MenuIcon } from "lucide-react";
 import { useAppSidebarContextV2 } from "../AppSidebarV2/AppSidebarProviderV2";
 import { UserBadge } from "@/components/User/UserBadge";
 import { UserSettingDropdown } from "@/components/User/UserSettingDropdown";
+import { Link } from "@tanstack/react-router";
 
 export const AppHeader = memo(() => {
   const isMobile = useIsMobile();
@@ -27,8 +28,16 @@ export const AppHeader = memo(() => {
       )}
 
       {/* Right side - User badge */}
-      <div className="flex items-center">
-        <UserSettingDropdown triggerEl={<UserBadge userName="Guest User" />} />
+      <div className="flex items-center gap-3">
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/expired" target="_blank">
+            <GraduationCap />
+            Expert Mode
+          </Link>
+        </Button>
+        <UserSettingDropdown
+          triggerEl={<UserBadge isMobile={isMobile} userName="Guest User" />}
+        />
       </div>
     </header>
   );
