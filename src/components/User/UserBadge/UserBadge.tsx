@@ -9,10 +9,11 @@ export interface UserBadgeProps extends
   userName: string;
   avatarUrl?: string;
   asChild?: boolean;
+  isMobile?: boolean;
 }
 
 export const UserBadge = forwardRef<HTMLButtonElement, UserBadgeProps>(
-  ({ userName, avatarUrl, ...buttonProps }, ref) => {
+  ({ userName, avatarUrl, isMobile, ...buttonProps }, ref) => {
     // Generate a stable random avatar URL based on userName
     const generatedAvatarUrl = useMemo(() => {
       if (avatarUrl) return avatarUrl;
@@ -41,6 +42,19 @@ export const UserBadge = forwardRef<HTMLButtonElement, UserBadgeProps>(
         />
       );
     };
+
+    if (isMobile) {
+      return (
+        <button
+          ref={ref}
+          size="icon"
+          variant="secondary"
+          {...buttonProps}
+        > 
+          {getAvatarDisplay()}
+        </button>
+      );
+    }
 
     return (
       <Button
